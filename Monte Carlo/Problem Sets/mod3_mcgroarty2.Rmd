@@ -1,0 +1,273 @@
+---
+title: "mod3_mcgroarty"
+author: "Ian McGroarty"
+date: "13FEB2020"
+output:
+  html_document:
+    df_print: paged
+  word_document: default
+  pdf_document:
+    keep_tex: no
+    latex_engine: pdflatex
+    fig_width: 6
+    fig_height: 8
+  header-includes:
+    - \usepackage{booktabs}
+    - \usepackage{longtable}
+    - \usepackage{array}
+    - \usepackage{multirow}
+    - \usepackage{wrapfig}
+    - \usepackage{float}
+    - \usepackage{colortbl}
+    - \usepackage{pdflscape}
+    - \usepackage{tabu}
+    - \usepackage{threeparttable}
+    - \usepackage{threeparttablex}
+    - \usepackage[normalem]{ulem}
+    - \usepackage{makecell}
+    - \usepackage[table]{xcolor}
+---
+
+
+```{r setup, include=FALSE}
+Sys.setenv(HTTP_PROXY = "c1proxy.frb.org:8080")
+Sys.setenv(HTTPS_PROXY = "c1proxy.frb.org:8080")
+Sys.setenv(SPARK_HOME = "/usr/hdp/current/spark2-client")
+Sys.setenv(SPARK_CONF_DIR= "/usr/hdp/current/spark2-client/conf/")
+
+library(knitr)
+library(rmarkdown)
+knitr::opts_chunk$set(echo = TRUE)
+
+
+```
+
+## Problem 1 
+ Suppose that the time to repair a machine is exponentially distributed random variable with mean 2. 
+
+### (a) What is the probability the repair takes more than 2 hours. 
+ Let T be the time to repair the machine so, $$P(T>t) = 1-P(T\leq t) = 1-e^{-\lambda t} = 1-e^{-2\cdot (1/2)} \implies P(T>t) = e^{-1} $$ (see Theorem 4.2.3 Marx pg 233).
+ 
+### (b) What is the probability that the repair takes more than 5 hours given that it takes more than three hours.
+ $$P(T>5 | t>3) = \frac{P(T>5)}{P(T>3)} = \frac{P(T>(3+2))}{P(T>3)} =  \frac{P(T>3)\cdot P(T>2)}{P(T>3)} = P(T>2) = e^{-1}$$
+ 
+\newpage
+
+## Problem 2
+Let $X\sim exp(\lambda )$ show that $P(x \geq a+t | x \geq a) = P(x\geq t)$
+
+\begin{align*}
+P(x \geq a+t | x \geq a) &= \frac{P(a \geq a + t) \cup P( X \geq a)}{P( X \geq a)} \\
+P(X>a+t) & \supseteq P(X>a) \\
+&= \frac{P(a \geq a + t)}{P( X \geq a)} \\
+&= \frac{exp(-\lambda (a + t))}{exp(-\lambda a )} \\ 
+&= \frac{exp(-\lambda (a) \cdot exp(-\lambda (t)}{exp(-\lambda a )} \\ 
+&= exp(-\lambda (t) \\
+&= P(x \geq t)
+\end{align*}
+
+\newpage 
+
+## Problem 3
+Consider a bank with two tellers. Three people, Alice, Betty, and Carol enter the bank at almost the same time and in that order. Alice and Betty go directly into service while Carol waits for the First available teller. Suppose that the service times for each customer are exponentially distributed with mean 4 minutes. 
+
+## (a) What is the expected total time for Carol to complete her business?
+So we have to see who gets done first, $E(min(A,B))$ plus the expected amount of time for Carol $E(C)$.  From the notes we have $E(min(A,B)) = \frac{1}{\lambda_A + \lambda_B}$ and $E(C) = \lambda =4 $. So $E(C_{tot}) = \frac{1}{(1/4) + (1/4)} + 4 = 6$
+
+## (b) What is the expected total time until the last of the three customers leaves? Hint: use the memoryless property of the exponential.
+Easy, so we saw that since Carol has to wait to see whoever gets done first - $E(min(A,B))$ - then we have to tak into account the max time for each teller, since they re the same we can express this as $E(max(A,B))$. Add the two and we have:
+$$ E(min(A,B)) + E(max(A,B)) = (\frac{1}{(1/4)+(1/4)} + 4) + (4- \frac{1}{(1/4)+(1/4)}) = 8 $$
+
+
+ \newpage
+ 
+## Problem 4:
+A machine has two critically important parts and is subject to three di???erent types of shocks. Shocks of type I occur at times of a Poisson process with rate $\lambda_1$. Shocks of types 1 break parts 1, 2 breaks 2, 3 breaks both. Let U and V be the failuer times of the two parts. 
+
+### (a) Find $P(U>s,V>t)$
+The trick here is that the thrid failure type is a failure of both parts so you have to include it in the joint distribution. Let W be the failure time of both parts (shock 3)
+
+\begin{align*}
+P(U>s,V>t) &= P(U>s,V>t,W>w) \\
+P(U>s) = P(V>t) &= e^{-\lambda_{i} \tau_{i}} \\
+P(W>w) &= P(W>max(s,t)) \\
+P(U>s,V>t) &= e^{-\lambda_1 \tau_{s}}\cdot e^{-\lambda_2 \tau_{t}} \cdot e^{-\lambda_{3} \tau_{max(s,t)}} && \text{By Independence} 
+\end{align*}
+
+### (b) Find the distribution of U and V.
+U and V are both Piosson process and thus are distributed exponentially. $U \sim e^{-\lambda_1 \tau_s}$ and $V \sim e^{-\lambda_2 \tau_t}$
+
+### (c) Are U and V independent. 
+When we look at the joint distribution we found in (a) you can see that they are most certainly not independent since it depends on the max(s,t) which can not be independent of s,t. So, sven though the *shocks*  are independent the *events* that are the failure of the machines are not. 
+
+ \newpage 
+ 
+## Problem 5:  Customers arrive at a bank according to a Poisson process with $\lambda = 10$ per hour. Given that two customers arrived in the first five minutes, what is the probability that:
+
+### (a) Both arrived in the first two minutes: 
+Let $\bowtie \sim e({\lambda t})$ represent rate of customers leaving the bank. We are interested in $P(\bowtie_{2/60} = 2 | \bowtie_{5/60} = 2)$ This can be expressed as $P(\bowtie_{2/60} = 2)\cdot P(\bowtie_{3/60} =3)$ since the events are independent. 
+\begin{align*}
+P(\bowtie_{2/60} = 2) &= e^{-\lambda \cdot t} = e^{-10 \cdot (2/60)}= e^{-(1/3)} \\
+P(\bowtie_{3/60} = 0) &= e^{-\lambda \cdot t} = e^{-10 \cdot (3/60)}= e^{-(1/2)} \\
+P(N(s)=n) &= \frac{exp(\lambda s)(\lambda s)^n}{n!} \\
+P(\bowtie_{2/60} = 2 | \bowtie_{5/60} = 2)$ &= e^{-(1/3)}\cdot e^{-(1/2)} \cdot \frac{(10*(2/60))^2}{2!} \cdot \frac{(10*(3/60))^0}{0!} \\
+&= e^{-(1/3)}\cdot e^{-(1/2)} \cdot \frac{(1/3)^2}{2}= 0.241
+\end{align*}
+
+
+```{r}
+exp(-(1/3))*exp(-(1/2))*((1/3)^2)/2
+```
+
+### (b) At least one arrived in the first two minutes 
+1 - Probability that they both arrived between minutes 3-5.
+
+\begin{align*}
+P(\bowtie_{2/60} \geq 1 | \bowtie_{5/60} =2) &=  1-P(\bowtie_{3/60} = 2) \\
+&= 1- \frac{(1/2)^2 \cdot e^{-(1/2)}}{2!} \\
+&= 0.92418
+\end{align*}
+
+ 
+```{r}
+1- (((1/2)^2)*exp(-(1/2))/2)
+```
+
+
+## Problem 6: Let N(t) be a Poisson process of $\lambda = 2$ 
+$P(N(2)=1,N(3)=4),N(5)=5) = P(N(2)=1) \cdot P(N(3)=4) \cdot P(N(5)=5) = 000371007$
+
+```{r}
+poisson <- function(lam,s,n) {
+  ((lam*s)^n)*(exp(-lam*s))/factorial(n)
+}
+
+pn2_1 <- poisson(2,2,1)
+pn3_4 <- poisson(2,3,4)
+pn5_5 <- poisson(2,5,5)
+pn2_1 * pn3_4 * pn5_5
+
+```
+
+b. $P(N(4)=3|N(2)=1,N(3)=2) =$
+
+```{r}
+pn2_1 <- poisson(2,2,1)
+pn3_2 <- poisson(2,3,2) 
+
+```
+
+c. $E(N(4)|N(2)=2) = 2+ E(N(4-2) = 2 + \lambda (2) = 6$
+
+
+```{r, include = FALSE}
+
+## example 2 in the notes
+pn12 <- poisson(4,1,1)
+pn0 <- poisson(4,1,0)
+pn12 + pn0
+
+## example 3 in the notes
+pn11 <- poisson(2,1,1)
+pn34 <- poisson(2,2,4)
+(pn11 * pn34 / pn11)
+
+exp(-4)*4^3/factorial(3)
+
+```
+
+
+## Problem 7
+
+```{r}
+
+poissonProcess = function(tot, n,lambda, s, nmbSim) {
+	
+    #  initiating vector where I will store all of my estimates
+    	vectorOfFractions = c(rep(0,nmbSim))
+    
+    
+    #  Simulating the Poisson process nmbSim times
+	    for (j in 1:nmbSim) {
+	
+			#  simulating little t values (incremental arrival times of customers)
+				tVec = rexp(tot,lambda);
+			# calculating big T values   (summing up the times)
+				TVec = cumsum(tVec)
+			#  Calculating the fraction of customers that arrive before time s
+				fracLessThenS = length(TVec[TVec < s])
+			#  Storing it in 'vectorOfFractions'
+				if (fracLessThenS == n) {
+					vectorOfFractions[j] = 1;
+				}
+	    }
+    	print(fracLessThenS)
+		
+		estProb = mean(vectorOfFractions);
+		paste("estimated Probability = ", estProb);
+}
+
+## tot is the number of increments (time increments)
+## n is the number of customers that arrive P(N(X)=n)
+## s is the time before the customer arrives
+nbs <- poissonProcess(tot=100,n=100 ,lambda = 2, s=50, nmbSim = 1000)
+dpois(100,2)
+
+```
+
+## Problem 8
+Illustrate (with the R program I wrote di???erentArrivalProbs.R) Theorem 1 and Corollary 1. That is, show how the accuracy of the Poisson approximation varies when the maximum of the arrival probabilities.
+
+```{r}
+differentArrivalProbs = function(n,uppLimit, nmbSimulations) {
+
+	### Simulating the different probabilities of arrival
+	
+	arrivalProbs = runif(n,0,uppLimit);
+	totArrivalsInSim = rep(0,nmbSimulations);
+
+	for (jSim in 1:nmbSimulations) {
+	
+		### Generating arrival variates
+	
+			arriveOrNot = rbinom(n,1,arrivalProbs);
+			totArrivals = sum(arriveOrNot);
+			totArrivalsInSim[jSim] = totArrivals;
+			
+		}
+		
+	par(mfrow = c(2,1))	
+	hist(totArrivalsInSim, density = 50);
+	
+	
+	##### Now generating and displaying Poisson Sample
+	
+	Lambda = sum(arrivalProbs)
+	PoissonSample = rpois(nmbSimulations, Lambda)
+	hist(PoissonSample, density = 50)
+	
+}
+
+differentArrivalProbs(n=100,uppLimit=1,nmbSimulations=10)
+differentArrivalProbs(n=100,uppLimit=1,nmbSimulations=100)
+differentArrivalProbs(n=5,uppLimit=1,nmbSimulations=100000)
+```
+ 
+
+### Problem 9 
+The Arrival rate starts at 0 at 10:00 increases to 4 at 12:00, to 6 b 2:00, 2 by 4:00, 0 by 6:00. 
+
+### What is the distribution of the number of arrivals in a day. 
+So we'll have to combine them. Since they are independent we should just be able to multiply them together?
+\begin{align*}
+(12:00) & &4 & & \int_{10:00}^{12:00}4e^{-4r} \cdot dr \\
+(2:00) & & 6 & & \int_{12:00}^{2:00} 6e^{-6r} \cdot dr \\
+(4:00) & & 2 & & \int_{2:00}^{4:00} 2e^{-2r} \cdot dr \\
+(6:00) & & 0 & & \int_{4:00}^{6:00} 0e^{-0r} \cdot dr \\
+\end{align*}
+$$ \int_{10:00}^{12:00}4e^{-4r} \cdot \int_{12:00}^{2:00} 6e^{-6r} \cdot \int_{2:00}^{4:00} 2e^{-2r} $$
+
+### What it the probability that no one arrives before noon. 
+$P(X=0) = exp(-\lambda)\lambda^0/0! = e^{-4}$
+
+

@@ -1,0 +1,103 @@
+\documentclass[12pt]{article}
+\usepackage[T1]{fontenc}
+%\usepackage[latin9]{inputenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{setspace}
+\usepackage{rotating}
+\usepackage{graphics}
+\usepackage[round]{natbib}
+%\usepackage{graphicx}
+%\usepackage{float} 				%allows you to float images
+\usepackage{latexsym}
+\usepackage{bbding}
+%\usepackage {moresize}
+\usepackage{listings}
+\usepackage{bbding}
+\usepackage{blindtext}
+\usepackage{hhline}
+%\usepackage{tikz}
+%\usetikzlibrary{shapes,backgrounds}
+%\usepackage{pgfplots}
+%\usetikzlibrary{arrows}
+\usepackage{enumitem}
+\doublespacing
+%\usepackage{geometry}
+\usepackage{amsthm}
+\usepackage{color}
+%\usepackage{array,multirow}
+%\usepackage{subcaption}
+%\usepackage{pst-plot}
+%	\psset{xunit=15mm}
+%\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+\setlength{\parskip}{\bigskipamount}
+\setlength{\parindent}{0pt}
+
+\newenvironment{problem}[2][Problem]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+
+\title{Problem Set 5 \thanks{Problem list 5.2.12, 5.3.10, 5.3.14, 5.4.20, 5.6.6}}
+\author{Ian McGroarty \\
+	Course Number: 625.603}
+\date{April 4, 2019}
+
+\begin{document}
+
+\maketitle
+\newpage
+\begin{problem}{5.2.12} A random sample of size $n$ is taken from the pdf: 
+\begin{align*}
+f_y(y;\theta ) &= \frac{2y}{\theta^2}, \ 0 \leq y \leq \theta \\ 
+L(\theta) &= \prod_{i=1}^n f_y(y_i ; \theta) && \text{Def. 5.2.1 (281)} \\ 
+&= \theta^{-2n}(2y)^n
+\end{align*}
+It is easy to see that  $L(\theta)$ is decreasing in $\theta $. To maximize $L(\theta)$ we must minimize $\theta$. Since $y \leq \theta$, $\hat{\theta}  = Y_{max}$.
+\end{problem}
+
+\begin{problem}{5.3.10} Babe Ruth batted 0.356 with 192 hits in 540 at-bats. Construct a 95\% confidence interval. \\
+
+\textbf{Solution} To construct a 95\% confidence interval, we can apply Theorem 5.3.1 (299)with k = 192, n = 540, and $z_{\alpha / 2}$ = 1.96.\footnote{From Table A.1 (675)}
+\begin{align*}
+\frac{k}{n} - z_{\alpha/2}\sqrt{\frac{(k/n)(1-k/n)}{n}}&, \frac{k}{n} + z_{\alpha/2}\sqrt{\frac{(k/n)(1-k/n)}{n}} \\
+\frac{192}{540} - 1.96\sqrt{\frac{(192/540)(1-192/540)}{540}}&, \frac{192}{540} + 1.96\sqrt{\frac{(192/540)(1-192/540)}{540}} \\
+(0.315&,0.396)
+\end{align*}
+This is his batting average, so the 95\% confidence interval for hits is $540*(0.315,0.396)$ = (170,214). 
+\end{problem}
+
+\begin{problem}{5.3.14} If (0.57,0.63) is a 50\% confindence interval for $p$, find $\frac{k}{n}$ and n. \\ 
+\textbf{Solution} The margin of error can be found by using the average distance from the mean, which is the difference in the bounds. $\frac{0.63-0.57}{2} = 0.03 = d = \frac{k}{n}$. To find how many observations were taken we use Definition 5.3.1 (301) $d=\frac{z_{\alpha/2}}{2\sqrt{n}} \implies n = (\frac{z_{\alpha/2}}{2d})^2 = (\frac{0.675}{2*(0.03)})^2 = 126.6 \approx 127$ observations. 
+\end{problem}
+
+\begin{problem} {5.4.20} Calculate the relative efficiency (r.e.) of $\hat{\lambda}_1 = X_1$ and $\hat{\lambda}_2=\bar{X_2}$. 
+\begin{proof} I mean they are both ``relatively efficient''\footnote{Einstein's Theory of relativity}. \end{proof}
+\textbf{Solution} Since it is a Poisson distribution: 
+\begin{align*}
+ Var_1(X) &= \lambda && \text{Theorem 4.2.4 (224)} \\ 
+ Var_2(\bar{X}) &= Var(\frac{X_1}{n} + \cdots + \frac{X_n}{n})  \\ 
+ &= \frac{Var(x)}{n} = \frac{\lambda}{n}
+ \end{align*}
+ The relative efficiency is defined as: 
+ \begin{align*}
+ r.e. (\hat{\lambda}_1) &= \frac{Var(\hat{\lambda}_2)}{Var(\hat{\lambda}_1)}  && \text{Def. 5.4.2 (314)} \\
+ & = \frac{\lambda /n}{\lambda} = \frac{1}{n}
+\end{align*}
+
+ 
+\end{problem}
+
+\begin{problem}{5.6.6} Is $W = \prod_{i=1}^nY_i$ a sufficient statistic for $\theta $. 
+\begin{align*}
+L(\theta) &= \prod_{i=1}^n f_Y(y;\theta) &\text{Def. 5.6.1 (322)} \\
+&= \prod_{i=1}^n \theta y^{\theta - 1} \\
+&= \theta^n (\prod_{i=1}^n y_i)^{\theta-1} 
+\end{align*}
+We can see that $L(\theta)$ depends on $\theta$ but only depends on y through the values of $\prod_{i=1}^ny_i$ . So define $h(Y) = \prod_{i=1}^ny_i$ and $g(h(x);\theta) = \theta^n (\prod_{i=1}^n y_i)^{\theta-1} $ and $b(k_1,\cdots , k_n)=1$. By theorem 5.6.1 (324) $W = \prod_{i=1}^nY_i$ is sufficient for $\theta $
+\end{problem}
+
+\end{document}
+
+

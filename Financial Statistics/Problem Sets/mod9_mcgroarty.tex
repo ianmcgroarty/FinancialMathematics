@@ -1,0 +1,169 @@
+\documentclass[12pt]{article}
+\usepackage[T1]{fontenc}
+%\usepackage[latin9]{inputenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{setspace}
+\usepackage{rotating}
+\usepackage{graphics}
+\usepackage[round]{natbib}
+%\usepackage{graphicx}
+%\usepackage{float} 				%allows you to float images
+\usepackage{latexsym}
+\usepackage{bbding}
+%\usepackage {moresize}
+\usepackage{listings}
+\usepackage{bbding}
+\usepackage{blindtext}
+\usepackage{hhline}
+%\usepackage{tikz}
+%\usetikzlibrary{shapes,backgrounds}
+%\usepackage{pgfplots}
+%\usetikzlibrary{arrows}
+\usepackage{enumitem}
+\doublespacing
+%\usepackage{geometry}
+\usepackage{amsthm}
+\usepackage{color}
+%\usepackage{array,multirow}
+%\usepackage{subcaption}
+%\usepackage{pst-plot}
+%	\psset{xunit=15mm}
+%\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+\setlength{\parskip}{\bigskipamount}
+\setlength{\parindent}{0pt}
+
+\newenvironment{problem}[2][Problem]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+
+\title{Problem Set 9 \thanks{Problem list 6.2.10, 6.3.6, 6.4.18, 6.5.2, 7.3.2, 7.4.2, 7.5.6}}
+\author{Ian McGroarty \\
+	Course Number: 625.603}
+\date{April 11, 2019}
+
+\begin{document}
+
+\maketitle
+\newpage
+\begin{problem}{6.2.10} Rosaura wants to see whether the stress of final exams elevates the blood pressures of freshman women. Under normal conditions systolic blood pressure averages 120mm Hg with a standard deviation of 12 mm Hg. The average blood pressure on exam day for 50 women s 125.2 mm Hg.  \\ 
+\textbf{Solution} Test: 
+\begin{align*}
+	H_0: \mu &= 120 mm\  Hg  \\ 
+	H_1: \mu  &> 120 mm \ Hg  
+\end{align*}
+Rosaura finds that $\bar{y}^* = 125.2$. By theorem 6.2.1, Rossaura can reject the null hypothesis that the exam does not raise blood pressure if $z\geq z_{\alpha}$ Thus, we want to determine: 
+\begin{align*}
+\text{P(We reject $H_0 | H_0$ is true)} &= P(\bar{Y} \geq 125.2 | \mu = 120) \\
+	&= P(\frac{\bar{Y} - 120}{12/\sqrt{50}} \geq \frac{125.2-120}{12/\sqrt{50}}) \\ 
+	&= P(Z \geq 3.064) \\
+	&= 0.0011
+\end{align*}
+The probability of rejecting $H_0$ if $H_0$ were true is $0.0011$, this is well below the common threshold of $p=0.05$. Meaning Rosaura can reject the hypothesis that the exam has no effect. It appears that the exam does increase blood pressure.  
+\end{problem}
+
+\begin{problem}{6.3.6} An examination of the birth dates and death deates of 348 celebrities found that 16 of those individuals had died in the month preceding their birth month.  Set up and test the hypothesis. \\
+\textbf{Solution} If celebrities die randomly (not according to their birth month), we would expect 1/12 of the sample to die in any given month. If celebrities do in fact postpone their deaths then we would see a p, probability that a celebrity dies in the month preceding their birthday, less than 1/12.Having observed 16 deaths/348 celebrities, we can test the significance of this difference using a one-sided binomial hypothesis test: 
+\begin{align*}
+	H_0: p &= 0.0833 \\
+	H_1: p &< 0.0833
+\end{align*}
+With $\alpha = 0.05$. Accorind to part (b) of Theorem 6.3.1. $H_0$ should be rejected if:
+\begin{align*}
+	z &= \frac{k-np_0}{\sqrt{np_0(1-p_0)}} \leq -z_{0.05}=-1.64 \\
+	z&=\frac{16-348(0.0833)}{\sqrt{(348)(0.0833)(1-0.0833)}} \\
+	&= -2.159 \leq -1.64 
+\end{align*} 
+Thus, we can reject the hypothesis that there is no difference in death rates of celebrities in the month before their birth month. It appears that celebrities are indeed postponing their deaths!
+\end{problem}
+
+\begin{problem}{6.4.18} An experimenter takes a sample size of 1 from the Poisson probability model, $p_X(k)=e^{-\lambda}\lambda^k/k!, k = 0,1,2...$, and wishes to test: 
+	$H_0: \lambda = 6 $ versus
+	$H_1: \lambda <6$
+By rejecting $H_0$ is $k\leq 2$.\\
+\textbf{(a).} Calculate the probability of committing a Type I error: 
+\begin{align*}
+	\text{P(Type I error)} &= \text{P(reject $H_0 | H_0$ is true)} \\
+					&= P(X \leq 2 | \lambda = 6 ) \\ 
+					&= \Sigma^2_{k=0}e^{-\lambda }\lambda^k/k! \\
+					&= \Sigma^2_{k=0}e^{-6 }6^k/k! \\
+					& e^{-6} + 6e^{-6} + 36e^{-6}/2 \\
+					&= 0.062
+\end{align*}
+\textbf{(b).} Calculate the the probability of committing a type 2 error when $\lambda = 4$.
+\begin{align*} 
+	\text{P(Type II error)} &= \text{P(accept $H_0 | H_0 $ is false)} \\
+		&= 1 - \text{P(reject $H_0 | H_1$ is true} \\
+		&=  1 - P( X \leq 2 | \lambda = 4) \\
+		&=  1- \Sigma^2_{k=0} e^{-4}4^k/k! \\
+		&= 0.762
+\end{align*}
+\end{problem}
+
+\begin{problem}{6.5.2}  Let $y_1,...,y_10$ be a ranom sample from an exponential pdf with unknown parameter $\lambda $. Find the form of GLRT for $H_0: \lambda = \lambda_0$ versus $H_1:\lambda \neq \lambda_0$ What integral would  determine the critical value if $\alpha = 0.5$?\\
+
+\textbf{Solution} Let $\omega $ be the set of unknown parameters admissible under $H_0 \ s.t. \ \lambda = \{\lambda : \lambda = \lambda_0 \} $ . Let $\Omega $ be the set of all possible values of all unknown parameters s.t. $\Omega = \{\lambda : \lambda \neq \lambda_0 \} $ Since $\omega $ can only take on one value $(\lambda_0)$. The maximum likelihood ratio will take the form: 
+\begin{align*}
+	L(\lambda ) &= \prod_{i=1}^{k} f_Y(y_i;\lambda ) && \text{Def. 5.2.1 (pg 281)} \\ 
+	max_{\omega} L = L(\lambda_0)&=  \prod_{i=1}^{10}\lambda_0 e^{-\lambda_0 y} = \lambda_0^{10}e^{\lambda_0 \Sigma_{i=1}^{10}y_i} 
+\end{align*}
+To maximize over $\Omega $ we must differentiate the Likelihood function and set it equal to zero to fine the maximum likelihood estimate: 
+\begin{align*}
+	L(\lambda ) &= \prod_{i=1}^{k} f_Y(y_i;\lambda ) && \text{Def. 5.2.1 (pg 281)} \\ 
+		&=  \prod_{i=1}^{10}\lambda e^{-\lambda y} = \lambda^{10}e^{\lambda \Sigma_{i=1}^{10}y_i} \\ 
+	\frac{d}{d\lambda }ln L(\lambda )&=\frac{d}{d\lambda }( 10ln(\lambda) - \lambda \Sigma_{i=1}^{10}y_i) = 0\\
+		 \hat{\lambda} &= \frac{10}{ \Sigma_{i=1}^{10}y_i} &&\text{this is the maximum likelihood estimate} \\
+\max_{\Omega} L = L(\hat{\lambda})& = (\frac{10}{ \Sigma_{i=1}^{10}y_i})^{10}e^{-10}
+\end{align*}
+Now we need to calculate the generalized likelihood ratio: 
+\begin{align*}
+	\Lambda &= \frac{max_{\omega}L(\lambda)}{max_{\Omega}L(\lambda)} && \text{Def. 6.5.1 (376)} \\
+		&= \frac{\lambda_0^{10}e^{\lambda_0 \Sigma_{i=1}^{10}y_i} }{ (\frac{10}{ \Sigma_{i=1}^{10}y_i})^{10}e^{-10}} \\ 
+&= (\frac{\lambda_0 e}{10})^{10}e^{-\lambda_0\Sigma_{i=1}^{10}y_i}(\Sigma_{i=1}^{10}y_i)^{10}  && \text{equation 1}
+\end{align*}
+By Def. 6.5.2 the GLRT is one that rejects $H_0$ whenever $0 < \lambda \leq \lambda^*$ where $\lambda^*$ is chosen s.t. $P(0<\Lambda \leq \lambda^* | H_0$ is true) = $\alpha $. Substituting $\Lambda$ in equation one gives the form of the GLRT. To determine the critical value if $\alpha = 0.5$ we would need to integrate: 
+$$ \int_0^{\lambda^*}f_{\Lambda}(w|\lambda = \lambda_0) = 0.05  $$ However, since we do not know $f_{\Lambda}(w|H_0)$ we can not evaluate this. 
+\end{problem}
+
+\begin{problem}{7.3.2}Find the moment generating function for a chhi squared random variable and use it to show that $E(\chi^2_n) = n$ and $Var(\chi^2_n)=2n. $
+
+\textbf{Solution}
+Let U be a chi squared random variable. By Def. 7.3.1 (pg 384) we can say that the pdf of $U = \Sigma_{j=1}^m Z^2_j$ where $Z_1,...Z_m$ are independent standard normal random variables. By theorem 7.3.1 (pg 384) U has a gama distribution with $r=\frac{m}{2}$ and $\lambda = \frac{1}{2}$. By theorem 4.6.5 (pg 270) the Moment generating function $M_U(t) = (1-t/\lambda)^{-r}$. Substituting the values for r and $\lambda $ we have: 
+$$ M_U(t) = \frac{1}{1-2t})^{-m/2} $$. 
+By theorem 3.12.1 $M_U^{(r)}(0) = E(U^r)$. Thus, 
+\begin{align*}
+E(U) = \frac{d}{dt}M_U(0) &= \frac{d}{dt} \frac{1}{1-2t})^{-m/2} \\
+	&= 2(n/2)(\frac{1}{1-2t})^{n/2+1}\Big|_{t=0} \\
+	&= n \\ 
+E(U^2) = \frac{d}{dt}M_U^1(0)& =  \frac{d}{dt}n(\frac{1}{1-2t})^{n/2+1} \\
+	&= n(n+2)(\frac{1}{1-2t})^{(n+4)/2} \Big|_{t=0}\\
+	&= n(n+2) \\
+Var(U) &= E(U^2) - [E(U)]^2 &&\text{Theorem 3.6.1 (pg 155)} \\
+&= n(n+2) - n^2 \\
+&= 2n
+\end{align*}
+\end{problem} 
+
+\begin{problem}{7.4.2} What values of x satisfy the following equations? \\
+\textbf{(a)} $P(-2.508  \leq T_{22} \leq 2.508) = 0.98 $\\
+\textbf{(b)} $P(T_{13} \geq -1.0794 ) = 0.85 $ \\
+\textbf{(c)} $P(T_{26} < 1.7056) = 0.95 $ \\
+\textbf{(d)} $P(T_2 \geq 4.3026) = 0.025 $ 
+\end{problem}
+\newpage 
+\begin{problem}{7.5.16} When working properly, 25-kg bags have a standard deviation of 1.0 kg. Test $H_0: \sigma^2 = 1$ versus $H_1: \sigma^2 >1$ using $\alpha = 0.05$ and $\Sigma_{i=1}^{30}y_i = 758.62$ and $\Sigma_{i=1}^{30}y_i^2 = 19,195.7938$  \\
+\textbf{Solution} By Theorem 7.5.2.a (pg 409) we will reject $H_0$ if $\chi^2 \geq \chi^2_{0.95,29}$ where $\chi^2 = (n-1)s^2/\sigma_0^2$. First to find the sample variance: 
+$$ s^2 = \frac{n(\Sigma_{i=1}^{30}y_i^2) - (\Sigma_{i=1}^{30}y_i)^2}{n(n-1)} = \frac{30(19,195.7938)-(758.62)^2}{30(29)} = 0.4247 $$
+Plugging this into the formula for 
+$$ \chi^2 = \frac{(n-1)s^2}{\sigma_0^2} = \frac{30-1)(0.4247)}{1^2} = 8.0697. $$
+Using an online chi squared table\footnote{http://www.statsoft.com/Textbook/Distribution-Tables\#chi} I found that $\chi^2_{0.95,29} = 17.71$. Since 8.0697 < 13.121, we can not reject the null hypotheses. 
+\end{problem} 
+\end{document}
+
+https://wolfweb.unr.edu/~drschmidt/stat467hw8sln.pdf
+http://jekyll.math.byuh.edu/courses/m321/handouts/gammahalf.pdf
+https://studylib.net/doc/18411298/proof-of-gamma-1-2-
+
+https://wolfweb.unr.edu/~drschmidt/stat467hw8sln.pdf

@@ -1,0 +1,125 @@
+\documentclass[12pt]{article}
+\usepackage[T1]{fontenc}
+%\usepackage[latin9]{inputenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{setspace}
+\usepackage{rotating}
+\usepackage{graphics}
+\usepackage[round]{natbib}
+\usepackage{graphicx}
+\usepackage{float} 				%allows you to float images
+\usepackage{latexsym}
+\usepackage{bbding}
+\usepackage {moresize}
+\usepackage{bbding}
+\usepackage{blindtext}
+\usepackage{hhline}
+\usepackage{tikz}
+\usetikzlibrary{shapes,backgrounds}
+\usepackage{pgfplots}
+\usetikzlibrary{arrows}
+\usepackage{enumitem}
+\doublespacing
+\usepackage{geometry}
+\usepackage{amsthm}
+\usepackage{color}
+\usepackage{array,multirow}
+\usepackage{subcaption}
+\usepackage{pst-plot}
+	\psset{xunit=15mm}
+\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+\setlength{\parskip}{\bigskipamount}
+\setlength{\parindent}{0pt}
+
+\newenvironment{problem}[2][Problem]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+
+\title{Problem Set 2 \thanks{Problem list - 2.3.10, 2.4.4, 2.4.36, 2.5.20, 2.6.12}}
+\author{Ian McGroarty \\
+	Course Number: 625.603}
+\date{February 14, 2019}
+
+\begin{document}
+
+\maketitle
+
+\begin{problem}{2.3.10}  An urn contains 24 chips. A is the event that the number is divisible by 2. B is the event that the number is divisible by 3. Find $P(A\cup B) $. \\
+\textbf{Solution:} $P(A \cup B) = 0.667 $
+\begin{align*}
+A &= \{2,4,6,8,10,12,14,16,18,20,22,24\} \\
+B &= \{3,6,9,12,15,18,21,24\} \\
+A \cup B &= \{2,3,4,6,8,9,10,12,14,15,16,18,20,21,22,24\} \\
+P(A \cup B) &= 16/24 \\
+			&= 0.6667
+\end{align*}
+\end{problem}
+
+\begin{problem}{2.4.4} Let A and B be two events such that $P((A \cup B)^C)=0.6$ and $P(A \cap B) = 0.1$. Let E be the event that either A or B occurs but not both will occur. Find $P(E|A\cup B)$. \\ 
+\textbf{Solution:} $P(E|A \cup B) = 0.75$ \\
+\\
+\textbf{Proof} 
+\begin{align*} 
+P(E|A \cup B) &= \frac{P(E \cap (A \cup B))}{P(A \cup B)} && \text{Def. Conditional Probability (pg 33)}\\
+P(E \cap (A \cup B)) &= P(E) + P(A \cup B) - P(A \cup B)  && \text{Theorem 2.3.6 (pg 27)} \\
+ &= P(E) &&\text{This follows since} E \subseteq (A \cup B)\\
+ &= P(A \cup B ) - P(A \cap B) && \text{Based on question.} \\
+P(A \cup B) &= 1 - P((A \cup B)^C) && \text{Theorem 2.3.1 (pg 27)} \\
+P(E|A \cup B) &= \frac{( 1 - P((A \cup B)^C)  ) - P(A \cap B)}{1-P((A \cup B)^C)} \\
+	&= \frac{(1-0.6 - 0.1)}{1-0.6} \\
+	&= 0.75  \\
+\end{align*}
+\end{problem}
+
+\begin{problem}{2.4.36} Probability of guilty verdict: 15\% if the defense can discredit the police department and 80\% if not. Attorneys has 70\% chance of discrediting police department. What is the probability of a guilty verdict. Let G =1 if guilty verdict, 0 otherwise. Let C = 1 if the attorney convinces contamination, 0 otherwise: Find P(G).
+\begin{align*}
+P(G=1 | C=0) &= 0.15 \\
+P(G=1 | C =1) &= 0.80 \\
+P(G=0 | C=0) &= 0.75 \\
+P(G=0 | C=1) &= 0.20 
+\end{align*}
+\textbf{Solution} P(G)=0.345 \\
+Since $C_0 \cap C_1 = \emptyset$ and $C_0 \cup C_1 = S$ Where S is the total set of events. And $P(C_0)>0$ and $P(C_1)>0$. We can apply Theorem 2.4.1 (pg 41). 
+\begin{align*}
+P(G) &= \Sigma_{i=0}^{i=1}P(G | C_i)P(C_i) \\
+ &= (0.3)*(0.8) + (0.7)*(0.15) \\
+&= 0.345
+\end{align*}
+\end{problem}
+
+\begin{problem}{2.5.20} Players A,B, and C toss a fair coin in order. The first to throw a heads wins. What are their respective chances of winning. \\
+\textbf{Solution}Let $A_H, A_T, B_H,B_T,C_H,C_T$ denote the events that A,B,C throw H (heads) or T (tails) on individual tosses. the P(A throws the first head)=$P(A_H \cup (A_T \cap B_T \cap C_T)\cup \cdots )$ It follows similarly for B and C. 
+\begin{align*}
+ P(Awin) &= \frac{1}{2} + \frac{1}{2}*(\frac{1}{8}) + \frac{1}{2}*(\frac{1}{8})^2 + \cdots = \frac{1}{2} +(\frac{1}{1-(1/8)})=\frac{4}{7} \\
+ P(Bwin) &= \frac{1}{4} + \frac{1}{4}*(\frac{1}{8}) + \frac{1}{4}*(\frac{1}{8})^2 + \cdots = \frac{1}{4} +(\frac{1}{1-(1/8)})=\frac{2}{7} \\
+P(Cwin) &= 1-\frac{4}{7}-\frac{2}{7}=\frac{1}{7}
+\end{align*}
+
+%\textbf{Solution} A has a 50\% chance of winning. B has a 25\% of winning, (A throws a tail and B throws a tail). C has a 12.5\% chance of winning, (A throws a tail, B throws a tail, C throws a head). Do I need more than this? For future reference in other problem sets, I feel like this is pretty self explanatory but I can write more if necessary. 
+\end{problem}
+
+\begin{problem}{2.6.12} What is the minimum number of (.,-) needed to represent any letter in the English alphabet? \\
+\textbf{Solution} \\
+It follows from the multiplication rule (pg 66) that with 2 symbols and n different characters. There are $2^k$ number of ways to arrange the (.,-). So the number of ways to arrange (.,-) in k slots is $\Sigma_{k=1}^{n} 2^k$. We need 26 combinations. So $$\Sigma_{k=1}^{n} 2^k < 26 $$ By counting, we can see that $\Sigma_{k=1}^{3} 2^k = 14 $ and $\Sigma_{k=1}^{4} 2^k = 30$. Thus, we need a minimum of 4 (.,-) to represent every letter of the alphabet. 
+\end{problem}
+
+\begin{problem}{Module 2 simulation}Consider a Baseball World Series (best of 7 game series) in which team A theoretically
+has a 0.55 chance of winning each game against team B. Simulate the probability that team A
+would win a World Series against team B by simulating 1000 World Series. You many use any
+software to conduct the simulation.  \\
+
+\textbf{Solution} Using the R code below, I ran this simulation a few times. I received the following outputs: (0.589,0.603,0.598). I also expanded the calculation to 100,000 and received (0.60607, 061046, 0.60552). This seems reasonable since performing the calculation using hypergeometric distribution, there is a probability of 0.608287 of A winning at least 4 games.  \\
+\textbf{The following is R code used to conduct this simulation:}\\
+count = 0\\
+for ( i in 1:1000) \{ \\
+ count <- count+ sum(sum(sample(c("A Win", "A lose"),7,replace=TRUE,prob=c(0.55 , 0.45)) == "A Win")>=4)\\
+\} \\
+count \\ 
+count/1000 \\
+
+\end{problem}
+ 
+\end{document}

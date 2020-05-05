@@ -1,0 +1,197 @@
+\documentclass[12pt]{article}
+\usepackage[T1]{fontenc}
+%\usepackage[latin9]{inputenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{setspace}
+\usepackage{rotating}
+\usepackage{graphics}
+\usepackage[round]{natbib}
+%\usepackage{graphicx}
+%\usepackage{float} 				%allows you to float images
+\usepackage{latexsym}
+\usepackage{bbding}
+%\usepackage {moresize}
+\usepackage{listings}
+\usepackage{bbding}
+\usepackage{blindtext}
+\usepackage{hhline}
+%\usepackage{tikz}
+%\usetikzlibrary{shapes,backgrounds}
+%\usepackage{pgfplots}
+%\usetikzlibrary{arrows}
+\usepackage{enumitem}
+\doublespacing
+%\usepackage{geometry}
+\usepackage{amsthm}
+\usepackage{color}
+%\usepackage{array,multirow}
+%\usepackage{subcaption}
+%\usepackage{pst-plot}
+%	\psset{xunit=15mm}
+%\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+\setlength{\parskip}{\bigskipamount}
+\setlength{\parindent}{0pt}
+
+\newenvironment{problem}[2][Problem]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+
+\title{Problem Set 4 \thanks{Problem list 3.10.6, 3.10.16, 3.12.6, 3.12.8}}
+\author{Ian McGroarty \\
+	Course Number: 625.603}
+\date{February 28, 2019}
+
+\begin{document}
+
+\maketitle
+\newpage
+\begin{problem}{3.10.6} Let $Y_1, Y_2, ... , Y_n$ be a random sample from the exponential pdf $f_y(y) = e^{-y}, y \geq 0$. What is the smallest n for which $P(Y_{min} < 0.2) > 0.9$? \\
+\textbf{Solution} The evaluated n > 11.513, since x must be an integer (I'm assuming since these are trials) $n\geq 12$.
+\begin{align*}
+P(Y_{min}<0.2) &= \int_0^{0.2} f_{Y_{min}}(y) \\
+&=\int_0^{0.2} n[1-F_Y(y)]^{n-1}f_Y(y) && \text{Theorem 3.10.1.b (pg193)} \\
+&=\int_0^{0.2} n[1-(1-e^{-y})]^{n-1}(e^{-y}) \\
+&= \int_0^{0.2}n(e^{-y})^{n-1}(e^{-y}) \\
+&= \int_0^{0.2}n(e^{-ny}) \\
+&= -e^{-ny} \Big|_0^{0.2} \\
+&= -e^{-(0.2)n}-(-1) >0.9 \\
+&= log(e^{-0.2n}) < log(0.1) \\
+n&>\frac{log(0.1)}{-0.2} \approx 11.513
+\end{align*}
+
+\end{problem}
+
+\begin{problem}{3.10.16} Suppose a device has three independent components, all of whose lifetimes (in months) are modeled by the exponential pdf, $f_y(y) = e^{-y}, y > 0 $. What is the probability that all three components will fail within two months of one another? \\ \
+
+\textbf{Solution}\footnote{To start, I want to note that understanding of the "memoryless property of the exponential distribution" was critical to even approaching success in this problem. I studied the proof in this pdf, http://www.cs.cmu.edu/afs/cs/academic/class/15750-s19/OldScribeNotes/lecture11.pdf (pg 2). I also used wolframalpha to do some of the calculations that were a to complex for my patience level.} Range = $Y_{max}-Y_{min}=Y^`_3-Y^`_1. \ P(R<r)=0.646$ \\
+ The \textit{memoryless property of the exponential distribution}: $$P(X\geq s+t | x \geq s) = P(X\geq t)$$
+ This implies that the level of $Y^`_1$ is inconsequential. Thus, we can assume that $Y^`_1 = 0$. In which case we are really only interested in $P(Y^`_{max} < r)$. Thus, we can apply Theorem 3.10.1.a (pg 193) with: n=3, $f_y(y)=e^{-y}$, and $F_Y(y) = \int_0^y f_Y(y)dy = 1-e^{-y}$. 
+\begin{align*}
+P(Y_{max} < m) &= \int_{-\infty}^m n[F_Y(y)]^{n-1}f_Y(y) \\
+P(Y^`_3 < 2) &= \int_0^2  3[1-e^{-y}]^2 e^{-y} &&\text{Enter WolframAlpha} \\
+&\approx 0.646. 
+\end{align*}
+\end{problem}
+
+\begin{problem}{3.12.6} Find $M_Y(t)$ if Y has the pdf: 
+$$
+f_Y(y) = \left\{
+        \begin{array}{ll}
+            y, & \quad 0 \leq y \leq 1 \\
+            2-y, & \quad 1 \leq y \leq 2 \\
+		0,  & \quad \text{elsewhere}
+        \end{array}
+    \right.
+$$
+
+\textbf{Solution} $M_Y(t) = \frac{1-e^t}{t^2}$ \\ Since X is continuous, the second part of Definition 3.12.1 (pg 206) applies: 
+\begin{align*}
+M_Y(t) &= E(e^{tW})= \int_{-\infty}^{\infty} e^{tw}f_W(w)dw  \\
+&= \int_{-\infty}^{0} e^{ty}0 + \int_{0}^{1} e^{ty}y + \int_{1}^{2} e^{ty}(2-y) + \int_{0}^{\infty} e^{ty}0 \\
+&= \int_{0}^{1} e^{ty}y + \int_{1}^{2} e^{ty}(2-y)  && \text{I used WolframAlpha here.} \\
+&= ( \frac{1}{t}y -\frac{1}{t^2} )e^{ty} \Big|_0^1 + \frac{2}{t} e^{ty} \Big|_1^2 - ( \frac{1}{t} y-\frac{1}{t^2} )e^{ty} \Big|_1^2 \\
+&= ( \frac{1}{t} -\frac{1}{t^2} )e^{t} + (\frac{1}{t^2}) + \frac{2}{t} e^{2t} - \frac{2}{t} e^{t} - ( \frac{2}{t} -\frac{1}{t^2} )e^{2t} +( \frac{1}{t} -\frac{1}{t^2} )e^{t} \\
+&= \frac{1}{t^2} + \frac{1}{t^2}e^{2t} - \frac{2}{t^2}e^t \\
+&= \frac{1}{t^2}(e^t-1)
+%&=\frac{e^{tx}(tx-1)}{t^2} \Big|_0^1 + \frac{(y-2)e^{tx}}{t}\Big|_1^2  \\
+%&= \frac{1-e^t}{t^2}
+\end{align*}
+\end{problem}
+
+
+\begin{problem}{3.12.8} Let Y be a continuous random variable with $f_Y(y) = ye^{-y}, o \leq y$. Show that $M_Y(t) = \frac{1}{(1-t)^2}$ 
+
+\textbf{Solution} Since X is continuous, the second part of Definition 3.12.1 (pg 206) applies:\\
+\begin{align*}
+M_Y(t) &= E(e^{tW})= \int_{-\infty}^{\infty} e^{tw}f_W(w)dw  \\
+&= \int_{0}^{\infty} e^{ty}ye^{-y}  \\
+&= \int_{0}^{\infty} e^{ty-y}y \\
+&= \frac{e^{(t-1)y}((t-1)y-1)}{(t-1)^2}\Big|_0^{\infty} \\
+&= lim_{y\rightarrow \infty} \frac{e^{(t-1)y}((t-1)y-1)}{(t-1)^2}  - lim_{y\rightarrow 0}\frac{e^{(t-1)y}((t-1)y-1)}{(t-1)^2}\\
+&= lim_{y\rightarrow \infty} \frac{e^{(t-1)y}((t-1)y-1)}{(t-1)^2}  - \frac{e^{(t-1)0}((t-1)0-1)}{(t-1)^2} \\
+&= lim_{y\rightarrow \infty} \frac{e^{U}(U-1)}{(t-1)^2} - \frac{(-1)}{(t-1)^2} && \text{Distribute, let U =(yt-y)} \\
+&= \frac{(lim_{y\rightarrow \infty} e^{yt-y})(lim_{y\rightarrow \infty}(yt-y-1))}{(t-1)^2} - \frac{(-1)}{(t-1)^2} && \text{Theorem 20.4 (Ross pg 156)} \\
+\end{align*}
+\\
+It will suffice to show that if $ lim_{y\rightarrow \infty }e^{yt-y} $ converges to 0 then $M_Y(t) \rightarrow \frac{1}{(t-1)^2}$. Since $ 0*(lim_{y\rightarrow \infty}(yt-y-1)) = 0$ and $\frac{0}{(t-1)^2} - \frac{(-1)}{(t-1)^2}=\frac{1}{(t-1)^2}$.
+\begin{proof}
+Let $\epsilon >0$ and $\delta = \frac{log(\epsilon )}{(t-1)}$. Note that, $ \forall \ t$ such  that  $0<t<1, \ \delta >0$. So if $0<|x|<\delta $ then $|x| < \frac{log(\epsilon ) }{(t-1)} \implies  (t-1)|x| = log(\epsilon )  \implies e^{xt-x}<\epsilon $ Thus, by Theorem 20.6 (Ross pg 159\footnote{Ross, Kenneth: Elementary Analysis the Theory of Calculus. Undergraduate Texts in Mathematics, 2nd edn. Springer, New York/Heidelberg/Berlin (2013)}), $\lim_{x\rightarrow \infty}e^{xt-x} = 0.$
+\end{proof}
+\end{problem}
+
+\begin{problem}{Assignment} The Inverse Transform Sampling procedure requires $F^-_Y(u)$ where $F^-_Y(u)$ is the inverse of the cumulative distribution function, $F_Y(y)$. We saw in problem 3.10.6 that $F_Y(y) = (1-e^-y)$. Solving for $x=-log(1-u)$ is our inverse CDF function. Now to be honest with you, I couldn't really follow your R code so I wrote my own. Now I'm not really sure what you are looking for to by way of the solution. But I've included my code below, and I am getting very close to 0.9 so I believe it is correct. 
+\begin{lstlisting}[language=R]
+# inverse transfrom sampling
+
+# This is the number of times you run the process, 
+positions <- 1000
+
+# This will be a vector of minimums
+samples <- c()
+
+# You add one number to sample each process
+# and you want to run the process position times. 
+while( length(samples) < positions )
+{
+#This is the number computed in the problem. 
+#The n needed to produce the minimum
+num.samples <-  12 
+
+# The uniform distribution from 0 to 1
+U           <-  runif(num.samples,0,1)
+
+# The pdf 
+Y <- exp(-U)
+
+# The inverse cdf function
+X           <- -log(1-U)
+
+# take the minimum
+sortedx <- sort(X) 
+minx = min(sortedx)
+samples <- append(samples,minx)
+}
+
+# Get the ratio of samples <0.2 to total samples.
+# This is your probability. 
+less <- sum(samples <0.2)
+ratio <- less/positions
+
+
+# plot
+hist(samples, breaks=30, freq=F, xlab='X', main='Generating Exponential R.V.')
+curve(dexp(X, rate=2) , 0, 3, lwd=2, xlab = "", ylab = "", add = T)
+
+\end{lstlisting}
+
+\end{problem}
+
+\end{document}
+
+
+
+
+
+
+
+
+Integration by parts
+\begin{align*}
+f(y) = y & \ \ \ df = dy  \\
+dg(y) = e^{y(t-1)} & \ \ \ g = \frac{e^{y(t-1)}}{t-1} \\
+&= \frac{y(e^{y(t-1)}}{t-1} - \frac{1}{(t-1)}\int e^{y(t-1)} \\
+&= \frac{y(e^{yt-y}}{t-1} - \frac{e^{y(t-1)}}{(t-1)^2} \\
+ \end{align*}
+
+
+
+
+ This is a matter of using joint probability to determine the pdf of the range: I use equation 3.10.5 (pg 197). With n=3, i=3, j=3, $f_Y(y) = e^{-y}$ and $F_Y(y)=-e^{-y}$.
+\begin{align*}
+f_{Y_i^`,Y_j^`}(u,v) &= \frac{n!}{(i-1)!(j-i-1)!(n-j)!}[F_Y(u)]^{i-1}[F_Y(v)-F_Y(u)]^{j-i-1} \cdot [1-F_Y(v)]^{n-j}f_Y(u)f_Y(v) \\
+&= 6[-e^{-v}+e^{-u}](e^{-v})(e^{-u})
+\end{align*}
+Find $M_Y(t)$

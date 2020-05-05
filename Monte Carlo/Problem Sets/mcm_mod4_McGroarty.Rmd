@@ -1,0 +1,182 @@
+---
+title: "Problem Set 4"
+author: "Ian McGroarty"
+date: "13FEB2020"
+output:
+  html_document:
+    df_print: paged
+  word_document: default
+  pdf_document:
+    keep_tex: no
+    latex_engine: pdflatex
+    fig_width: 6
+    fig_height: 8
+  header-includes:
+    - \usepackage{booktabs}
+    - \usepackage{longtable}
+    - \usepackage{array}
+    - \usepackage{multirow}
+    - \usepackage{wrapfig}
+    - \usepackage{float}
+    - \usepackage{colortbl}
+    - \usepackage{pdflscape}
+    - \usepackage{tabu}
+    - \usepackage{threeparttable}
+    - \usepackage{threeparttablex}
+    - \usepackage[normalem]{ulem}
+    - \usepackage{makecell}
+    - \usepackage[table]{xcolor}
+---
+
+
+```{r setup, include=FALSE}
+Sys.setenv(HTTP_PROXY = "c1proxy.frb.org:8080")
+Sys.setenv(HTTPS_PROXY = "c1proxy.frb.org:8080")
+Sys.setenv(SPARK_HOME = "/usr/hdp/current/spark2-client")
+Sys.setenv(SPARK_CONF_DIR= "/usr/hdp/current/spark2-client/conf/")
+
+library(knitr)
+library(rmarkdown)
+library(expm)
+library(matlib)
+
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include = FALSE}
+## Theorem 1
+ p <- matrix(c(0.4,0.2,0.1,0.6,0.5,0.7,0,0.3,0.2),ncol = 3)
+ as.matrix(p)
+ p %*% p %*% p
+# 
+# ## Example 6
+ pi1 <- matrix(c((19/85),(19/85),(19/85)) , ncol =1 )
+ p %*% pi1
+ 
+
+#x <- matrix(c((19/85),(48/85),(18/85)),ncol=1)
+ 
+ 
+ 
+
+#rowSums(p*(19/85))
+```
+
+
+## Problem 1 
+  Let $X_n$ be a Markov chain with the state space $\{0,1,2\}$ and intital distribution $\pi = (0.2,0.5,0.3)$ and the transition probability matrix: 
+  $$P= \begin{bmatrix}
+  0.3 & 0.1 & 0.6 \\
+  0.4 & 0.4 & 0.2 \\
+  0.1 & 0.7 & 0.2 
+  \end{bmatrix}$$
+  
+### (a) $P(X_1=2)$
+What is the probability that the state is 2 in 1 step. Since t=1 we just need to take:
+\begin{align*}
+P(X_i = j) &= \sum_i \pi^{t-1} \cdot P^t(i,j) \\
+P(X_1 = 2) &= \sum_i \pi^0 \cdot P^1(i,2) \\
+&= \begin{bmatrix} 0.2 & 0.5 & 0.3 \end{bmatrix} \begin{bmatrix} 0.6 \\ 0.2 \\ 0.2 \end{bmatrix}  \\ 
+&= 0.28
+\end{align*}
+```{r}
+p <- matrix(c(0.3,0.4,0.1,0.1,0.4,0.7,0.6,0.2,0.2) , ncol = 3)
+pi <- matrix(c(0.2,0.5,0.3),ncol = 1)
+p_2 <- p[,3]
+t(pi) %*% p_2
+```
+
+### (b) $P(X_2 = 2)$
+What is the probability that the state is 2 in step 2. Since t=2:
+\begin{align*}
+P(X_i = j) &= \sum_i \pi^{t-1} \cdot P^t(i,j) \\
+P(X_2 = 2) &= \sum_i \pi^1 \cdot P^2(i,2) \\
+&= \begin{bmatrix} 0.2 & 0.5 & 0.3 \end{bmatrix} \begin{bmatrix} 0.32 \\ 0.36 \\ 0.24 \end{bmatrix}  \\ 
+&= 0.316
+\end{align*}
+
+```{r}
+p <- matrix(c(0.3,0.4,0.1,0.1,0.4,0.7,0.6,0.2,0.2) , ncol = 3)
+pi <- matrix(c(0.2,0.5,0.3),ncol = 1)
+p2 <- p %*% p 
+  as.matrix(p2)
+p2_2 <- p2[,3]
+t(pi) %*% p2_2
+```
+
+### (c) $P(X_3 = 2 | X_0=0)$
+What is the probability that the state is 2 in three steps given that step 0 is 0. By theorem 1 in the notes: The m-step transition probability $P(X_{n+m}=j \ X_n = i)$ is the (i.j)th element of the mth power of P. So we want $P_{0,2}^3 = 0.276$
+```{r}
+p <- matrix(c(0.3,0.4,0.1,0.1,0.4,0.7,0.6,0.2,0.2) , ncol = 3)
+pi <- matrix(c(0.2,0.5,0.3),ncol = 1)
+p3 <- p %*% p %*% p
+as.matrix(p3)
+```
+### (d) $P(X_0 = 1|X_1 = 2)$
+The process is reversable since there are no zeros in the transition matrix. So We just need the $P_{2,1}^1 = 0.4$
+
+###(e) $P(X_1 = 1,X_3 =1)$
+What is the probability that X is 1 in 1 step and X is 1 in 3 steps. We just need the $P_{1,1}^2 = 0.19$
+
+## Problem 2
+Okay so there are 3 umbrellas. Let $X_n$ be the number of umbrellas at the place where Ella arrives after walk n. It rains with probability p. To help me walk through this $X_{n-1}$ is the place of ella's departure on walk n. We have the transition probabilty matrix of:
+\begin{bmatrix}
+0 & 0 & 0 & 1 \\
+0 & 0 & (1-p) & p \\
+0 & (1-p) & p & 0 \\
+(1-p) & p & 0 & 0
+\end{bmatrix}
+
+This makes sense because (for example) 3 goes to 0 if it isn't raining. and 3 goes to 1 if it is raining. We can say that this markov chain is irreducible and aperiodic and we see that (0,3) is recurrent so that will be the limiting distribution. That works out for us since if Ella gets to a point where all of her umbrellas are at the arrival she won't have an umbrella for her departure. To get the limiting probability we will have to apply the liming probability matrix s.t. $\pi_3 \cdot P_{i,3} = \pi_3$ 
+Also note that there are 3 (1-p)s and 3 ps so in order for the $\sum \pi_i = 1 $ then we multiply by p to because it needs to rain on the day that there are no umbrellas sp  $\pi_0p = \frac{1}{(1-p)+3}\cdot p$
+
+
+## Problem 3
+(Joni, Tony) are irreducible since they can both throw to eachother. It is also recurrent and absorbing since they only throw to themselves. (Mark) is also an absorbing set. Everyone but mark (Dick, Helen, Joni, Sam, Toni) are transient since once you leave that group the ball is gone. To find the probability that mark will end up with the ball we can not use pi since it is not as a whole irreducible. So We take $P^\infty $ and look at the first row since Dan starts with the ball and look at the fourth elemen which is 0.3454. 
+![text](mod4_p3c.png)
+
+![text](mod4_p3a.png)
+```{r}
+p <- matrix(c(0  ,.25,0,0  ,.25,0,
+              0  ,0  ,0,0  ,.25,0,
+              .25,.25,0,0  ,0  ,1,
+              .25,0  ,0,1  ,.25,0,
+              .25,.25,0,0  ,0  ,0,
+              0.25,.25,1,0,.25,0) , ncol = 6)
+as.matrix(p)
+
+p %^% 1000
+#leign <- as.matrix(eigen(p)$vectors) 
+#meep2 <- leign * 1/leign[1,1]
+#pi <- Inverse(meep2)
+#pi1 <- pi[1,]
+#pi1
+#p %*% pi1
+
+```
+
+
+
+## Problem 4
+Consider a general Chain with state space $S= \{1,2\}$ and write the ransition probability as 
+$$P = \begin{bmatrix} (1-a) & a \\ b & (1-b) \end{bmatrix} $$ 
+
+Use the Markov Property to show that:
+
+\begin{align*}
+P(X_{n+1}=1) - \frac{b}{a+b} &= (1-a-b)\{P(X_n=1) - \frac{b}{a+b}\} \\
+P(X_{n+1}=1) &= P(X_{n+1}=1|X_n=1)\cdot P(X_n=1) +  P(X_{n+1}=1|X_n=2)\cdot P(X_n=2) \\
+&= (1-\alpha )\cdot P(X_n=1) + b\cdot P(X_n=2) && \text{def} \\
+&= (1-\alpha )\cdot P(X_n=1) + b\cdot (1-P(X_n=1)) && \text{axiom 5 (mod1)}\\
+&= (1-\alpha - b)\cdot P(X_n=1) + b \\
+P(X_{n+1}=1) - \frac{b}{a+b} &= (1-\alpha - b)\cdot P(X_n=1) + b - \frac{b}{a+b} \\
+&= (1-\alpha - b)\cdot P(X_n=1) - \frac{b-b(a+b)}{a+b} \\
+&=(1-a-b)\{P(X_n=1) - \frac{b}{a+b} \} \\
+P(X_n=1) &=\frac{b}{a+b} + (1-a-b)\{P(X_n=0) - \frac{b}{a+b} \} && \text{theorem 1}
+\end{align*}
+
+
+
+
+
+

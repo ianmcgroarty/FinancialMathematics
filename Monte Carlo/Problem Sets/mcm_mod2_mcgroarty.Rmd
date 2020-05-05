@@ -1,0 +1,311 @@
+---
+title: "Problem Set 2 - Corrections"
+author: "Ian McGroarty"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#setwd('//rb.win.frb.org/C1/Accounts/M-O/c1imm01/Redirected/Desktop/Financial Mathematics/Problem Sets')
+```
+
+## Problem 1 
+
+Let X and Y have joint density f given by $$ f(x,y) = cxy \ \ 0 \leq y \leq x \leq 1 $$ 
+
+### (a). Determine the normailization constant c.
+\begin{align*}
+f(x,y) &= \int_0^1 \int_0^x cxy \cdot dydx \\
+&= \int_0^1 [cxy^2/2 |_0^x ] \cdot dx\\
+&= \int_0^1 cx^3/2 dx \\
+&= cx^4/8 |_0^1 \\
+&= c/8 = 1 \\
+c &= 8 
+\end{align*}
+
+### (b). Determine $P(X+2Y \leq 1)$
+\begin{align*}
+P(X+2Y \leq 1) &= P(X \leq 1 - 2y) \\
+&= \int_0^1 \int_y^{1-2y} 8xy  \cdot dxdy \\
+&= \int_0^1 [4x^2y |_x^{1-2y}] \cdot dy \\
+&= \int_0^1 [4(1-2y)^2y - 4(y)^2y \\
+&= \int_0^1 12y^3 - 16y^2 + 4y) \\
+&= 12y^4/4 - (12/3)y^3 + (4/2)y^2) |_0^1 \\
+&= (12/4)-(12/3)+(4/2) \\
+&= 1
+\end{align*}
+
+*Correction*
+$P(X+2Y \leq 1) = P(Y \leq \frac{1-X}{2})$ So are looking for $0 < y < min(x,\frac{1-x}{2})$. First we find $ x= \frac{1-x}{2} \implies x=(1/3)$ If $X<(1/3)$ then the min is x. If $X>(1/3)$ the min is $\frac{1-x}{2}$ whose max is (1/3). So we can integrate:
+$$ \int_0^{1/3} \int_0^x 8xy \cdot dydx + \int_{1/3}^{1} \int_0^{(1-x)/2} 8xy \cdot dydx$$ 
+\begin{align*}
+P(X+2y \leq 1) &= \int_0^{1/3} \int_0^x 8xy \cdot dydx + \int_{1/3}^{1} \int_0^{(1-x)/2} 8xy \cdot dydx \\
+&= \int_0^{1/3} 4xy^2|_0^x \cdot dx + \int_{1/3}^{1} 4xy^2|_0^{(1-x)/2} \cdot dx \\
+&= \int_0^{1/3} 4x^3 \cdot dx + \int_{1/3}^{1} 4x-4x^2+x^3  \cdot dx \\
+&= 4x^4|_0^{1/3} +  2x^2-(4/3)x^3+(1/4)x^4|_{1/3}^{1}  \cdot dx \\
+&= 0.79
+\end{align*}
+```{r}
+4*((1/3)^4) + ((2*(1)^2 - (4/3)*(1)^3 + (1/4)*(1)^4)-(2*(1/3)^2 - (4/3)*(1/3)^3 + (1/4)*(1/3)^4))
+```
+
+
+### (c). Find $E(X|Y=y)$
+\begin{align*}
+f_Y(y) &= \int_y^1 8xy \cdot dx \\
+&= 4x^2y |_y^1 \\
+&= 4y-4y^3 \\
+f(x|y) &= \frac{f(x,y)}{f_Y(y)} \\
+&= \frac{8xy}{4y(1-y^2)} \\
+f(x|y)&= \frac{2x}{(1-y^2)} \\
+E(X|Y=y) &= \int_y^1 \frac{2x}{(1-y^2)} x \cdot dx \\
+&= \frac{(2/3)x^3}{(1-y^2)} |_y^1 \\
+&= \frac{(2/3)(1-y^3)}{(1-y^2)} 
+\end{align*}
+
+*Correction*
+Since X>Y we only have to evaluate from y to 1 and let the conditional expectation be a function of the given random variable: $4y-4y^3$. 
+
+### (d). Find $E(X)$ 
+\begin{align*}
+f_x(x) &= \int_0^x 8xy \cdot dy \\
+&= 4xy^2 |_0^x \\
+&= 4x^3 \\
+E(X) &= \int_y^1 4x^3 \cdot x \cdot dx \\
+&= x^4 |_y^1 \\
+&= 1-y^4
+\end{align*}
+
+*Corrrection*
+You almost had it. But you need to integrate from 0 to 1 (also you did your integration wrong):
+\begin{align*}
+f_x(x) &= \int_0^x 8xy \cdot dy \\
+&= 4xy^2 |_0^x \\
+&= 4x^3 \\
+E(X) &= \int_0^1 4x^3 \cdot x \cdot dx \\
+&= (1/5) x^4 |_0^1 \\
+&= 4/5
+\end{align*}
+
+
+\newpage
+
+## Problem 2
+Let $X\sim N(\mu,\Sigma )$ with $\mu^T = (2,-3,1)$ and $$\Sigma =
+ (\begin{matrix} 1&1&1 \\ 1&3&2 \\ 1&2&2 \end{matrix})$$
+
+### (a) Find the distribution of $Y= 3X_2 - 2X_2 + X_3$.
+
+```{r cars, results='asis'}
+E <- matrix(c(1,1,1,1,3,2,1,2,2),nrow=3)
+a <- matrix(c(3,-2,1), nrow=1)
+u <- matrix(c(2,-3,1), nrow= 3)
+
+## Expected value of Y
+as.matrix(a %*% u)
+
+## Variance of Y
+as.matrix( a %*% E %*% t(a))
+```
+ 
+The  distribution of $Y= 3X_2 - 2X_2 + X_3 \sim N(13,9)$.
+
+### (b) Find a 2 x 1 vector such that the following are independent:
+$$X_2, \ X_2-a^T (\begin{matrix} X_1 \\ X_2 \end{matrix})$$
+A 2x1 vector c can be applied to a matrix such that: 
+\begin{bmatrix}
+X2\\
+X_2 - c1X_1 - c2X_2
+\end{bmatrix}
+=
+\begin{bmatrix}
+0 & 1 & 0 \\
+-c1 & 1-c2 & 0 
+\end{bmatrix}
+
+```{r p2b, results='asis'}
+c1 <- 3
+c2 <- 0
+a2 <- matrix(c(0,-c1,1,1-c2,0,0), nrow=2)
+
+## The diagonal matrix should be all zeros.
+a2 %*% E %*% t(a2)
+```
+
+\newpage 
+
+## Problem 3
+Find $P(X^2 < Y < X)$ if X and Y are jointly distributed with pdf: 
+$$ f(x,y) = 2x \ s.t. \ 0 \leq x \leq 1, \ 0 \leq y \leq 1 $$ 
+Find Marginal pdf:
+\begin{align*}
+f_Y(x) &= \int_0^1 f(x,y) dx && \text{Definition} \\
+&= \int_0^1 2x dx \\
+&= x^2 |_0^1 \\
+&= 1 \\
+F_Y(x) &= \int_{x^2}^{x} f_Y(x) \\
+&= \int_x^{x^2} 1 \\
+P(X^2 < Y < X) &= x - x^2 
+\end{align*}
+ 
+ \newpage
+ 
+## Problem 4:
+The random pair (X,Y) have the distribution:
+\begin{array}{ccc|c}
+(1/12) & (2/12) & (1/12) & (4/12) \\
+(2/12) & (0/12) & (2/12) & (4/12)\\
+(0/12) & (4/12) & (0/12) & (4/12) \\
+\hline \\
+(3/12) & (6/12) & (3/12) & 1
+\end{array}
+=
+\begin{bmatrix}
+1&0&1 \\
+0&1&0 \\
+0 & 0 & 0 
+\end{bmatrix}
+
+### (a) Show that X and Y are dependent:
+To show this we can use the fact that if $Cov(X_i,X_j)=0$ then $X_i,X_j$ are independent. That means that the vectors of the values of X and Y must be linerarly independent. We see that the reduced row echelon form yeilds a row of 0s. Thus, we can say that the vectors X and Y are linearly dependent and thus so are X and Y. (I don't have my liner book with me took cite the linear dependence definitions sorry).
+
+### (b) Find a matrix that is lineraly independent but has the same marginal probabilitites:
+IS THERE A TRICK TO THIS??
+$$\begin{array}{ccc|c}
+(1/12) & (2/12) & (1/12) & (4/12) \\
+(2/12) & (0/12) & (2/12) & (4/12)\\
+(0/12) & (4/12) & (0/12) & (4/12) \\
+\hline \\
+(3/12) & (6/12) & (3/12) & 1
+\end{array} 
+=
+\begin{bmatrix}
+1&0&0 \\
+0&1&0 \\
+0&0&1 
+\end{bmatrix}$$
+ 
+ \newpage 
+ 
+## Problem 5: Suppose that $X_1...X_{20}$ are independent random variables with density function f(x) = 2x 0 < x < 1. Use the central limit theorem to approximate $P(S\leq 10)$
+\begin{align*}
+E(S) &= \int_0^1 f(x)\cdot x dx &&\text{independence} \\
+&= \int_0^1 2x^2 \\
+&= (2/3)x^2 |_0^1 
+&= 2/3 \\
+E(S^2) &= \int_0^1 2x^4 \\
+&= 2/4 \\
+V(S) &= E(S^2)-E(S)^2 \\
+&= 1/18 \\
+S & \sim N(20\cdot(2/3),20\cdot (1/18)) \\
+ S&\sim N(13.3,1.11) \\
+ P(S \leq 10) &= P( \frac{S - 13.33}{\sqrt{1.11}} \leq \frac{10 - 13.33}{\sqrt{1.11}}  ) \\
+ &= P(Z \leq -3.16)=0.0008 
+\end{align*}
+
+```{r}
+(10 - 13.33)/(sqrt(1.11))
+    pnorm(-3.16)
+```
+
+\newpage
+
+
+## Problem 6: Suppose that a measurement has mean $\mu$ and variance $\sigma^2 = 25$. Let $\bar{X}$ be the average of n independent measurements. How large should n be s.t. $P(|\bar{X} - \mu | < 1)=0.95$?
+\begin{align*}
+P(|\bar{X} - \mu | < 1)&=0.95 \\
+P(\frac{|\bar{X} - \mu |}{\sigma / \sqrt{n}}&<\frac{1}{\sigma / \sqrt{n}}) &\text{divide} \\
+P(Z&<\frac{1}{\sigma / \sqrt{n}}) \\
+P(Z&<\frac{1}{5/\sqrt{n}}) &= 0.95  & \text{Z score of 1.96}\\
+\frac{1}{5/\sqrt{n}} &= 1.96
+n&= 96.04 trials 
+\end{align*}
+
+```{r}
+(5*1.96)^2
+```
+
+
+## Problem 7: Not sure how to show this but I'll do it for a few iterations?
+
+```{r, results='markup'}
+
+limitTheorem = function(n,epsilon) {
+	
+	vecOfAverages = c(rep(0,10000))
+	for (i in 1:10000) {
+		smpl = rpois(n,4.2)
+		avg = mean(smpl);
+		vecOfAverages[i] = avg;
+	}
+	hist(vecOfAverages);
+	vecOfDifferences = vecOfAverages - 4.2*c(rep(1,10000));
+	nmbCloseToTruth = length(vecOfDifferences[abs(vecOfDifferences) <= epsilon]);
+	print(nmbCloseToTruth/10000);
+}
+
+limitTheorem(1,1)
+limitTheorem(10,0.1)
+limitTheorem(100,0.01)
+
+### Adjust to prove Central limit Theorm 
+    limitTheorem2 = function(n,epsilon) {
+      
+      vecOfAverages = c(rep(0,10000))
+      distr = c(rep(0,10000))
+      for (i in 1:10000) {
+        smpl = rpois(n,4.2)
+        avg = mean(smpl);
+        normdis <- ((avg) - 4.2)/(n/sqrt(n))
+        vecOfAverages[i] = avg;
+        distr[i] <- normdis  
+      }
+      hist(distr);
+        vecOfDifferences = vecOfAverages - 4.2*c(rep(1,10000));
+      nmbCloseToTruth = length(vecOfDifferences[abs(vecOfDifferences) <= epsilon]);
+      print(nmbCloseToTruth/10000);
+    }
+
+limitTheorem2(1,1)
+limitTheorem2(10,0.1)
+limitTheorem2(100,0.01)
+
+```
+
+\newpage
+
+## Problem 8
+
+The independent rndom variables have the common distribution function:
+$$P(X_i \leq x|\alpha , \beta ) = 
+\begin{matrix}
+ 0 & x<0 \\
+(x/\beta )^{\alpha } & 0 \leq x \leq \beta \\
+ 1 & x >\beta
+\end{matrix}$$
+
+\begin{align*}
+f(\alpha \beta ) &= \frac{d}{dx} \frac{x}{\beta }^{\alpha } \\
+&= \alpha \cdot \frac{x}{\beta }^{\alpha - 1} \\
+L(\alpha, \beta ) &= \prod_{j=1}^n \alpha \cdot \frac{x}{\beta }^{\alpha - 1} \\
+&= \alpha^(n+1) \cdot \frac{1}{\beta }^{n(\alpha)} \cdot \prod x_j^{\alpha} \\
+&= (n)\cdot ln(\alpha ) - (n-1)\alpha \cdot ln(1/\beta ) + (n-1)\alpha ln(x_j) \\
+& \beta \text{is strictly decreaseing, so max L is at min} \beta = X_n \\
+L(\alpha \beta )_{min} &= \frac{\partial \alpha , \beta}{\partial \alpha} (n)\cdot ln(\alpha )  (n-1)\alpha \cdot ln(1/X_n ) + (n-1)\alpha ln(x_j) \\
+0 &= \frac{n}{\alpha} - (n-1)\cdot ln(1/X_n) + (n-1)ln(x_j) \\
+\alpha &= \frac{n}{(n-1)\cdot ln(1/X_n) + (n-1)ln(x_j)}
+\end{align*}
+
+For the data $\beta = 25$ since this is the max(X) and $\alpha =$ 
+
+```{r}
+#(n-1)\cdotln(1/X_n) + (n-1)ln(x_j)
+14/((13*log(1/25))+13*log(20.9))
+14/((13*log(1/25))+13*log(23.9))
+14/((13*log(1/25))+13*log(24))
+```
+

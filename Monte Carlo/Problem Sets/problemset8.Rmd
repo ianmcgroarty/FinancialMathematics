@@ -1,0 +1,208 @@
+---
+title: "Problem Set 6"
+author: "Ian McGroarty"
+date: "08MAR2020"
+output:
+  html_document:
+    df_print: paged
+  word_document: default
+  pdf_document:
+    keep_tex: no
+    latex_engine: pdflatex
+    fig_width: 6
+    fig_height: 8
+  header-includes:
+    - \usepackage{booktabs}
+    - \usepackage{longtable}
+    - \usepackage{array}
+    - \usepackage{multirow}
+    - \usepackage{wrapfig}
+    - \usepackage{float}
+    - \usepackage{colortbl}
+    - \usepackage{pdflscape}
+    - \usepackage{tabu}
+    - \usepackage{threeparttable}
+    - \usepackage{threeparttablex}
+    - \usepackage[normalem]{ulem}
+    - \usepackage{makecell}
+    - \usepackage[table]{xcolor}
+---
+
+
+```{r setup, include=FALSE}
+Sys.setenv(HTTP_PROXY = "c1proxy.frb.org:8080")
+Sys.setenv(HTTPS_PROXY = "c1proxy.frb.org:8080")
+Sys.setenv(SPARK_HOME = "/usr/hdp/current/spark2-client")
+Sys.setenv(SPARK_CONF_DIR= "/usr/hdp/current/spark2-client/conf/")
+
+library(knitr)
+library(rmarkdown)
+library(expm)
+library(rmutil)
+library(mnormt)
+
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problem 1 
+Assume that $X \sim N(0,\sigma^2)$
+### (a) Prove that $E(exp(-X^2)) = \frac{1}{\sqrt{2\sigma^2 + 1}}$
+$$
+\begin{align*}
+let & g(x) = e^{-X^2} = e^{(\mu + \sigma \cdot x)^2} = e^{\sigma^2\cdot x^2} && \text{Normalize} \\
+let & f(x) = \frac{1}{\sqrt{2\pi \sigma^2}}e^{(1/2)\cdot(x^2/2)} \\
+E[g(x)] &= \int_{-\infty}^{\infty} g(x) \cdot f(x) dx && \text{Theorem 3.5.3 (148) Larsen & Marx} \\
+&= \int_{-\infty}^{\infty} e^{\sigma^2\cdot x^2} \cdot \frac{1}{\sqrt{2\pi \sigma^2}}e^{(1/2)\cdot(x^2/2)} dx\\
+&=  \frac{1}{\sqrt{2\pi \sigma^2}} \int_{-\infty}^{\infty} exp(\sigma^2 x^2 - \frac{x^2}{2}) \\
+&=  \frac{1}{\sqrt{2\pi \sigma^2}} \int_{-\infty}^{\infty} exp((x^2/2)\cdot (2\sigma  + 1)) \\
+&= \frac{2\sigma + 1}{\sqrt{2\pi \sigma^2}} \int_{-\infty}^{\infty} e^{\sigma^2/2} dx \\
+&= \frac{2\sigma + 1}{\sqrt{2\pi \sigma^2}}
+\end{align*}
+$$
+
+I couldn't get it all the way but I got close. I suspect I am doing something wrong with the normal distribution but I can't tell exactly what. 
+
+### (b) Use Monte Carlo Methods to prove your result from (a)
+```{r}
+  ## Set the function
+    h <- function(x){
+      exp(-x^2)
+    }
+    
+  ## Integrate - find the true mean in this case given by problem
+    truemean <- function(s){
+      1/(sqrt(2*s^2+1))
+    }
+    truemean(1)
+  
+  ## Sampling
+    # Set Nsim 
+      Nsim <- 10^5
+    # Generate uniform
+      x <- rnorm(Nsim)
+    # Evaluate h(x)
+      hx <- h(x) 
+    # Average of hx
+      estint <- cumsum(hx)/(1:Nsim)
+    # Get the variation from the true mean for everyvalue of hx
+      esterr <- sqrt(cumsum(hx-estint)^2)/(1:Nsim)
+  
+  ## Graph
+  #par(mar=c(2,2,2,1),mfrow=c(1,2))
+  #curve(h,xlab="Function",ylab="",lwd=2)
+  plot(estint, type='l',lwd=2,
+       xlab="Iterations",ylab="Mean and Error range", main="Problem 1b",
+       ylim=c(0.56,0.6))
+  
+  lines(estint+3*esterr,col="gold",lwd=1)
+  lines(estint-3*esterr,col="gold",lwd=1)
+  abline(h=truemean(1),col = "red")
+  
+```
+
+
+## Problem 2 
+Estimate the mean and variance of this distribution using Monte Carlo methods.
+$$ f(x) = 3.852985 \cdot exp(-x^2\sqrt{x})[sin(x)]^2 $$
+
+```{r}
+###
+  # Set the function
+    f <- function(x){
+    3.852985*exp((-x^2*sqrt(x)))*(sin(x)^2)
+    }
+    
+  # Set sim 
+    Nsim <- 10^6
+  # Generate g(x) - use exponential because of the previous exercise? (3.13)
+    x <- rexp(Nsim)
+  # Evaluate h(x)
+    fx <- f(x) 
+  # Get the density weight [f(x)/g(x)]
+    w <- f(x)/dexp(x)
+  # Compute the h function
+    h <- w * x
+    #max(h)
+    
+  # Average of hx
+    estint <- cumsum(h)/(1:Nsim)
+  # Get the variation from the true mean for everyvalue of hx
+    esterr <- sqrt(cumsum(h-estint)^2)/(1:Nsim)
+  # Mean & Variance
+      print(paste0("The function has a mean of ",mean(estint)," and a variance of ",var(estint)))
+      
+        
+  ## Graph
+    par(mfrow=c(1,2))
+    curve(f,xlab="Function",ylab="",main="Function", xlim=c(0,3),lwd=2)  
+    plot(estint, xlab="Mean and Error range",ylab="",type='l',lwd=2,
+         ylim=c(0.85,0.9))
+    lines(estint+2*esterr,col="gold",lwd=1)
+    lines(estint-2*esterr,col="gold",lwd=1)
+    abline(h=mean(estint), col = "red")
+   
+```
+
+## Problem 3
+For the density in the previous problem find the $P(X>3)$
+```{r}
+  ## P(X>3) 
+      sum(as.numeric(h>3))/Nsim
+      
+```
+
+
+
+## Problem 4 (exercise 3.14)
+When a cdf F(x) has a tail power of $\alpha $ (i.e., when $1-F(x) \propto x^{-\alpha }$). Show that $E[X|X>K] = K\alpha /(\alpha-1)$
+$$
+\begin{align*}
+cdf&: 1-F(X)= (1-x^{-\alpha}) \\
+pdf&: \frac{d}{dx}(1-x^{-\alpha}) = \alpha x^{-\alpha -1} \\
+E[X|X>K] &= E[X>K] = \int_K^{\infty}x\cdot f(x) \\
+&= \int_K^{\infty} x \cdot  \alpha x^{-\alpha -1} dx \\
+&= \alpha \int_K^{\infty} x^{-\alpha} dx \\
+&= \alpha [\frac{x^{-\alpha + 1}}{-\alpha + 1}|_K^{\infty}] \\
+&= 0 - \alpha \frac{K^{-\alpha + 1}}{-\alpha + 1} \\
+&=? \frac{K}{1-\alpha} \cdot \alpha 
+\end{align*}
+$$ 
+
+## (b) Derive this?
+Okay I'm not sure what to do here but I found it realy useful to play with this. So  I'll talk about that.
+
+First note that $\alpha >1$ since $1-\alpha $ can not be zero and must be positive. we can see that in the graph that the line does not change much regardless of the x range: 
+
+```{r}
+p <- function(x){
+  x^(-2)
+}
+
+par(mfrow=c(1,2))
+curve(p,xlim=c(1,10),main="1,10")
+curve(p,xlim=c(10,100),main="10,100")
+
+```
+
+Now also notice how the curve gets "sharper?" as $\alpha $ increases.
+
+```{r}
+p10 <- function(x){
+  x^(-2)
+}
+
+p100 <- function(x){
+  x^(-4)
+}
+
+
+par(mfrow=c(1,2))
+curve(p10,xlim=c(1,10),main="alpha = 10")
+curve(p100,xlim=c(1,10),main="alpha = 100")
+
+```
+
+If you really look at it this looks pretty similar to a geometic probability distribution. Which makes sense since there are going to be pretty small changes between values of x in the pdf so you can almost think of each increase in x as an independent event. But the $\alpha $ is going to directly determine both how high you start at K and how gradual the descent. 
+  
+  
+

@@ -1,0 +1,348 @@
+---
+title: "Problem Set 9"
+author: "Ian McGroarty"
+date: "03APRIL2020"
+output:
+  html_document:
+    df_print: paged
+  word_document: default
+  pdf_document:
+    keep_tex: no
+    latex_engine: pdflatex
+    fig_width: 6
+    fig_height: 8
+  header-includes:
+    - \usepackage{booktabs}
+    - \usepackage{longtable}
+    - \usepackage{array}
+    - \usepackage{multirow}
+    - \usepackage{wrapfig}
+    - \usepackage{float}
+    - \usepackage{colortbl}
+    - \usepackage{pdflscape}
+    - \usepackage{tabu}
+    - \usepackage{threeparttable}
+    - \usepackage{threeparttablex}
+    - \usepackage[normalem]{ulem}
+    - \usepackage{makecell}
+    - \usepackage[table]{xcolor}
+---
+
+
+```{r setup, include=FALSE}
+Sys.setenv(HTTP_PROXY = "c1proxy.frb.org:8080")
+Sys.setenv(HTTPS_PROXY = "c1proxy.frb.org:8080")
+Sys.setenv(SPARK_HOME = "/usr/hdp/current/spark2-client")
+Sys.setenv(SPARK_CONF_DIR= "/usr/hdp/current/spark2-client/conf/")
+
+library(knitr)
+library(rmarkdown)
+library(expm)
+library(rmutil)
+library(mnormt)
+library(graphics)
+library(raster)
+library(sp)
+library(MASS)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problem 2 Exercise 4.10
+Show that the Accept-Reject sample $(X_1, ... , X_n)$ can be associates with two iid samples; $(U_1, ... U_N)$ and $(Y_1m,...Y_N)$ N is the stopping time associates with the aceptance of n variables $Y_j$. Then Show that:
+$$ E_f[h(X)] = \delta_1 = \frac{1}{n} \sum_{i=1}^{n} = \frac{1}{n}\sum_{j=1}^{N}h(Y_j)I_{U_j\leq w_j} $$
+Note: $I(\phi)$ is a Bernouli random variable with success probability $\phi $
+$$
+\begin{align*}
+Y_1 \cdots Y_N && Y\sim g \\
+U_1 \cdots U_N && U \sim Norm \\
+X_i = Y_i \cdot I(U \leq \frac{f(Y_j)}{Mg(Y_j)}) && \text{By Accept Reject Algorithm} \\
+X_1 \cdots X_n && X \sim f \\
+\end{align*}
+$$
+
+So we have n values of X. But for a moment let us consider what N is. n is the total number of accepted $Y_j$ given that we generated N $Y_j$. 
+$$ n = \sum_{j=1}^N I(U \leq \frac{f(Y_j)}{Mg(Y_j)}) $$
+
+Now we consider: 
+$$ 
+\begin{align*}
+E_f[h(X)] &= \frac{1}{n}\sum_{i=1}^n h(X_i) && \text{By definition} \\ 
+&= \frac{1}{n}\sum_{i=1}^n h(Y_i \cdot I(U \leq \frac{f(Y_j)}{Mg(Y_j)})) && \text{Substituting for }X_i \\
+&= \frac{1}{n}\sum_{j=1}^N h(Y_i \cdot I(U \leq \frac{f(Y_j)}{Mg(Y_j)})) && \text{need to change the sum for j} \\
+&= \frac{1}{n}\sum_{j=1}^N I(U \leq \frac{f(Y_j)}{Mg(Y_j)})\cdot h(Y_i)  && \text{Equivalent because its 0,1} \\
+&= \frac{1}{n}\sum_{j=1}^N I(U_j\leq w_j)\cdot h(Y_i) && \text{Let } w_j = \frac{f(Y_j}{Mg(Y_j)}
+\end{align*}
+$$
+
+
+## Problem 3: Exercise 4.15 b and c
+
+### Exercise 4.15 - Included for notes! 
+$X|y \sim P(y), \ Y \sim Ga(a,b)$ A is negative Binomial. 
+
+The pmf of a negative binomial is 
+$$P(X=x)= (\frac{x-1}{r-1})p^r(1-p)^{x-r}$$
+with $E(X)=\mu = r(1-p)/p$ and $Var(X)=\mu + \mu^2/r^2$. In R we can generate values of a negative Binomial: $X \sim Negbin(5,0.5)$
+```{r}
+# Set the iterations
+  Nsim <- 1000
+  mu <- 5
+  r <- 0.5
+
+# Generate X ~Negbin(5,0.5)
+  x1 <- rnegbin(1000,mu,5)
+# Mean and standard deviation of x1 
+  mean.x1 <- mean(x1)
+  sd.x1 <- sd(x1)/sqrt(Nsim)
+  print(paste0("The mean of X=",mean.x1," The standard deviation of x1=",sd.x1))
+```
+I can also generate values of X by taking advantage of the fact that if 
+$$X|y \sim Poi(y) \text{ and } Y \sim G(r,(1-p)/p)$ \implies X \sim Negbin(r,p) $$
+I can tke advantage of this relationship and use Rao-Blakwellization to generate an estimate of the mean with a smaller standard deviation. 
+Since $(1-p)/p = (1-0.5)/.5 = 1 $ then $Y \sim G(5,1)$. 
+
+```{r}
+y <- rgamma(Nsim,5,1)
+mean.y <- mean(y)
+sd.y <- sd(y)/sqrt(Nsim)
+  print(paste0("The mean of Y=",mean.y," The standard deviation of y=",sd.y))
+```
+
+
+### Exercise 4.15 (b)
+$ X|y \sim N(0,y), \ Y \sim G(a,b)$  Okay so lets say we want to estimate $X \sim T$ with 6 degrees fo freedom. 
+
+Since we want $X|y \sim N(0,y)$ and we want the lowest variance, we can just get $Y \sim G(0,0)$ which has the mean of 0 and a variance of 0? 
+  
+```{r}
+Nsim <- 1000
+a <- 0
+b <- 6 
+y <- rgamma(Nsim,a,b)
+mean.y <- mean(y)
+sd.y <- sd(y)/sqrt(Nsim)
+  print(paste0("The mean of Y=",mean.y," The standard deviation of y=",sd.y))
+
+```
+  
+```{r, echo = FALSE}
+# ## Set the number of simluations
+#   Nsim <- 1000
+# ## Set gamma parameters
+#   a <- 1
+#   b <- 2
+# 
+# ## Calculate n values of x
+#   x1 <- rnorm(Nsim,mean=0)
+#   mean.x1 <- cumsum(x1)/(1:Nsim)
+#   #s1 <- apply(estint,1,quantile,(c(0.25,0.975)))
+# 
+# ## Get matrix of Yi ~ gamma
+#   y2 <- rgamma(Nsim,a,b)
+# ## Get matrix of Xi with variance Yi
+#   x2 <- rnorm(Nsim,sd=sqrt(y2))
+# 
+# ## Mean of x2
+#   mean.x2 <- cumsum(x2)/(1:Nsim)
+# 
+# ## Compare variances
+#   print(paste0("The variance of X=",var(mean.x1)," The variance of X|Y=",var(mean.x2)))
+# 
+# ## Grahing
+#   plot(mean.x1, type = 'l', ylim = c(-0.5,0.5), ylab = "",
+#        main = "Expected value of X", xlab = "Iterations", col = "orange")
+#   par(new=TRUE)
+#   plot(mean.x2, type = 'l', ylim=c(-0.5,0.5),
+#        col = "blue", xlab = "", ylab = "")
+#   abline(h=0, col = "black")
+
+  
+```  
+
+
+### Exercise 4.15 (c)
+$ X|y \sim Bin(n,y), \ Y \sim Be(a,b) \text{ with } X \sim Beta-binomial.$
+
+If $X \sim Beta-Binomial$ then it has the pmf funciton: 
+$$ P(X=x) = \binom{n}{k} \frac{B(k+a,n-k+\beta)}{B(\alpha,\beta)}$$
+With  $E[X]=\frac{n\alpha}{\alpha + \beta}$ and $Var(X) = \frac{n \alpha \beta (\alpha + \beta + n)}{(\alpha +\beta)^2(\alpha + \beta + 1)}$
+In R we can generate a beta binomial with *rbetabinom(n,a,b)* 
+
+```{r}
+# Set parameters 
+  Nsim <- 1000
+  a <- 4
+  b <- 4
+  m <- 0.5
+  
+x1 <- rbetabinom(Nsim,size = a, m=m,b)
+# Mean and standard deviation of x1 
+  mean.x1 <- mean(x1)
+  sd.x1 <- sd(x1)/sqrt(Nsim)
+  print(paste0("The mean of X=",mean.x1," The standard deviation of x1=",sd.x1))
+
+```
+
+
+I can also generate values of X by taking advantage of the fact that if:
+$$ X|y \sim Bin(n,y), \ Y \sim Be(a,b)  $$ 
+
+With $E[Y] = \frac{\alpha }{\alpha + \beta} \implies E[X] = n\cdot E[Y]$
+```{r}
+# Set parameters 
+  Nsim <- 1000
+  a <- 4
+  b <- 4
+  m <- 0.5
+  
+# Generate Y ~ Be(a,b)
+  y <- rbeta(Nsim,a,b)
+
+# Generate X|y \sim bin(n,y)
+  x2 <- rbinom(Nsim,size=a, prob = y)
+
+# Mean and standard deviation of x1 
+  mean.x2 <- mean(x2)
+  sd.x2 <- sd(x2)/sqrt(Nsim)
+  print(paste0("The mean of X=",mean.x2," The standard deviation of x1=",sd.x2))
+    
+```
+
+
+## Problem 4: Exercise 4.18 (i,ii,iv)
+A Naive waty to implement the antithetic variable scheme is to use both U and (1-U) in an inverse simulation. Examine empirically whether this method leads to variance reduction for the distributions:
+
+### (i) $f_1(x) = 1/\pi (1+x^2)$
+Wow! I must admit I was skeptical of this at first but the difference is undeniable. They each approach the mean of 0.29, but the dyadic approach makes it so much faster and so much more refined I can't even plot the convergence on the same plot because it just looks like a straight line. 
+
+
+```{r}
+# Set parameters 
+  Nsim <- 1000
+  q <- 8
+# Set Function
+  fx <- function(x){
+    1/(pi*1+x^2)
+  }
+  
+## Generate Uniform 
+  U <- runif(Nsim,0,1)
+  x <- fx(U)
+  estx <- cumsum(x)/1:Nsim
+  estx[Nsim]
+  
+## dyadic symetries
+  resid <- U%%2^(-q)
+  simx <- matrix(resid,ncol=2^q,nrow=Nsim)
+  simx[,2^(q-1)+1:2^1] <- 2^(-q)-simx[,2^(q-1)+1:2^1]
+  for (i in 1:2^q){
+    simx[,i] <- simx[,i] + (i-1)*2^(-q)
+  }
+  xsym <- fx(simx)
+  estint <- cumsum(apply(xsym,1,mean))/(1:Nsim)
+  
+## Sum up
+  print(paste0("The raw variance is ",var(estx)," The variance with antithetic variable is ", var(estint)
+              ,"The raw mean is ", mean(estx)," The mean with antithetic variables is ",mean(estint)))
+
+## Plot 
+  par(mfrow = c(1,2))
+  plot(estint , type = 'l', col = "blue")
+  plot(estx, type='l', col = "red")
+  
+```
+
+
+### (ii) $f_2(x)=\frac{1}{2} e^{-|x|}$
+```{r}
+# Set parameters 
+  Nsim <- 1000
+  q <- 8
+# Set Function
+  fx <- function(x){
+    0.5*exp(-1*abs(x))
+  }
+  
+## Generate Uniform 
+  U <- runif(Nsim,0,1)
+  x <- fx(U)
+  estx <- cumsum(x)/1:Nsim
+  
+## dyadic symetries
+  resid <- U%%2^(-q)
+  simx <- matrix(resid,ncol=2^q,nrow=Nsim)
+  simx[,2^(q-1)+1:2^1] <- 2^(-q)-simx[,2^(q-1)+1:2^1]
+  for (i in 1:2^q){
+    simx[,i] <- simx[,i] + (i-1)*2^(-q)
+  }
+  xsym <- fx(simx)
+  estint <- cumsum(apply(xsym,1,mean))/(1:Nsim)
+  
+## Sum up
+  print(paste0("The raw variance is ",var(estx)," The variance with antithetic variable is ", var(estint)
+              ,"The raw mean is ", mean(estx)," The mean with antithetic variables is ",mean(estint)))
+
+## Plot 
+  par(mfrow = c(1,2))
+  plot(estint , type = 'l', col = "blue")
+  plot(estx, type='l', col = "red")
+  
+```
+
+
+### (iv) $f_4(x)= \frac{2}{\pi \sqrt{3}}(1+x^2/3)^{-2}$
+```{r}
+# Set parameters 
+  Nsim <- 1000
+  q <- 8
+# Set Function
+  fx <- function(x){
+    (2/(pi*sqrt(3)))*(1+x^2/3)^(-2)
+  }
+  
+## Generate Uniform 
+  U <- runif(Nsim,0,1)
+  x <- fx(U)
+  estx <- cumsum(x)/1:Nsim
+  
+## dyadic symetries
+  resid <- U%%2^(-q)
+  simx <- matrix(resid,ncol=2^q,nrow=Nsim)
+  simx[,2^(q-1)+1:2^1] <- 2^(-q)-simx[,2^(q-1)+1:2^1]
+  for (i in 1:2^q){
+    simx[,i] <- simx[,i] + (i-1)*2^(-q)
+  }
+  xsym <- fx(simx)
+  estint <- cumsum(apply(xsym,1,mean))/(1:Nsim)
+  
+## Sum up
+  print(paste0("The raw variance is ",var(estx)," The variance with antithetic variable is ", var(estint)
+              ,"The raw mean is ", mean(estx)," The mean with antithetic variables is ",mean(estint)))
+
+## Plot 
+  par(mfrow = c(1,2))
+  plot(estint , type = 'l', col = "blue")
+  plot(estx, type='l', col = "red")
+  
+```
+
+
+
+
+
+
+
+
+## Problem 5: 
+Assume you use antithetic variables to estimate some parameter of the standard normal distribution. Prove, in this case, that the covariance between $X_i$ and $Y_i$ is -1
+
+If we use Antithetic variables then we know that they have the same variance because they are drawn from the same distribution. In fact, since they are both drawn from the standard normal distribution we know that $Var(X)=Var(Y) = \sigma = 1$. We will see below 
+
+$$ \begin{align*}
+Var(aX+bY) &= Var(X + (1-X)) = 0 \\
+Var(aX+bY) &= a^2Var(X) + b^2Var(Y) + 2abCov(X,Y) && \text{Theorem 3.9.5 (188)} \\
+&=Var(X) + Var(Y) + 2Cov(X,Y) && \text{Let a,b = 1}\\
+&= 2\sigma + 2\rho && Var(X)=Var(Y) \\
+0 &= 2 + 2\rho && X \sim N(0,1) \\
+\rho = -1
+\end{align*}$$

@@ -1,0 +1,77 @@
+---
+title: "mod3_mcgroarty"
+author: "Ian McGroarty"
+date: "13FEB2020"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+
+```{r setup, include=FALSE}
+library(knitr)
+library(rmarkdown)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problem 1 
+ Suppose that the time to repair a machine is exponentially distributed random variable with mean 2. 
+
+### (a) What is the probability the repair takes more than 2 hours. 
+ Let T be the time to repair the machine so, $$P(T>t) = 1-P(T\leq t) = 1-e^{-\lambda t} = 1-e^{-2\cdot (1/2)} \implies P(T>t) = e^{-1} $$ (see Theorem 4.2.3 Marx pg 233).
+### (b) What is the probability that the repair takes more than 5 hours given that it takes more than three hours.
+ $$P(T>5 | t>3) = \frac{P(T>5)}{P(T>3)} = \frac{P(T>(3+2))}{P(T>3)} =  \frac{P(T>3)\cdot P(T>2)}{P(T>3)} = P(T>2) = e^{-1}$$
+ 
+\newpage
+
+## Problem 2
+Let $X\sim exp(\lambda )$ show that $P(x \geq a+t | x \geq a) = P(x\geq t)$
+
+\newpage 
+
+## Problem 3
+Consider a bank with two tellers. Three people, Alice, Betty, and Carol enter the bank at almost the same time and in that order. Alice and Betty go directly into service while Carol waits for the ???rst available teller. Suppose that the service times for each customer are exponentially distributed with mean 4 minutes. (a) What is the expected total time for Carol to complete her business? (b) What is the expected total time until the last of the three customers leaves? Hint: use the memoryless property of the exponential.
+
+ \newpage
+ 
+## Problem 4:
+A machine has two critically important parts and is subject to three di???erent types of shocks. Shocks of type I occur at times of a Poisson process with rate $\lambda_1$. Shocks of types 1 break parts 1, 2 breaks 2, 3 breaks both. Let U and V be the failuer times of the two parts. 
+
+### (a) Find $P(U>s,V>t)$
+The trick here is that the thrid failure type is a failure of both parts so you have to include it in the joint distribution. Let W be the failure time of both parts (shock 3)
+\begin{align*}
+P(U>s,V>t) &= P(U>s,V>t,W>w) \\
+P(U>s) = P(V>t) = P(W>w) &= e^{-\lambda_{i} \tau_{i}} \\
+P(W>w) = P(W>max(s,t)) \\
+P(U>s,V>t) &= e^{-\lambda_1 \tau_{s}}\cdot e^{-\lambda_2 \tau_{t}} \cdot e^{-\lambda_{3} \tau_{max(s,t)}} && \text{By Independence} 
+\end{align*}
+
+### (b) Find the distribution of U and V.
+U and V are both Piosson process and thus are distributed exponentially. $U \sim e^{-lambda_1 \tau_s}$ and $V \sim e^{-lambda_2 \tau_t}$
+
+### (c) Are U and V independent. 
+When we look at the joint distribution we found in (a) you can see that they are most certainly not independent since it depends on the max(s,t) which can not be independent of s,t. So, sven though the *shocks*  are independent the *events* that are the failure of the machines are not. 
+
+ \newpage 
+ 
+## Problem 5:  Customers arrive at a bank according to a Poisson process with $\lambda = 10$ per hour. Given that two customers arrived in the ???rst ???ve minutes, what is the probability that:
+
+### (a) Both arrived in the first two minutes: 
+Let $\bowtie \sim e({\lambda t})$ represent rate of customers leaving the bank. We are interested in $P(\bowtie_{2/60} = 2 | \bowtie_{5/60} = 2)$ This can be expressed as $P(\bowtie_{2/60} = 2)\cdot P(\bowtie_{3/60} =3)$ since the events are independent. 
+\begin{align*}
+P(\bowtie_{2/60} = 2) &= e^{-\lambda \cdot t} = e^{-10 \cdot (2/60)}= e^{-(1/3)} \\
+P(\bowtie_{3/60} = 0) &= e^{-\lambda \cdot t} = e^{-10 \cdot (3/60)}= e^{-(1/2)} \\
+P(N(s)=n) &= \frac{epx(\lambda s)(\lambda s)^n}{n!} \\
+P(\bowtie_{2/60} = 2 | \bowtie_{5/60} = 2)$ &= e^{-(1/3)}\cdot e^{-(1/2)} \cdot \frac{(10*(2/60))^2}{2!} \cdot \frac{(10*(3/60))^0}{0!} \\
+&= e^{-(1/3)}\cdot e^{-(1/2)} \cdot \frac{(1/3)^2}{2}= 0.241
+\end{align*}
+
+```{r}
+exp(-(1/3))*exp(-(1/2))*((1/3)^2)/2
+```
+
+### (b) 
+
+
+

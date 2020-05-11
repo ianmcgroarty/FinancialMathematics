@@ -1,0 +1,156 @@
+---
+title: "Problem Set 14"
+author: "Ian McGroarty"
+date: "10May2020"
+output:
+  html_document:
+    df_print: paged
+  word_document: default
+  pdf_document:
+    keep_tex: no
+    latex_engine: pdflatex
+    fig_width: 6
+    fig_height: 8
+  header-includes:
+    - \usepackage{booktabs}
+    - \usepackage{longtable}
+    - \usepackage{array}
+    - \usepackage{multirow}
+    - \usepackage{wrapfig}
+    - \usepackage{float}
+    - \usepackage{colortbl}
+    - \usepackage{pdflscape}
+    - \usepackage{tabu}
+    - \usepackage{threeparttable}
+    - \usepackage{threeparttablex}
+    - \usepackage[normalem]{ulem}
+    - \usepackage{makecell}
+    - \usepackage[table]{xcolor}
+---
+
+
+```{r setup, include=FALSE}
+Sys.setenv(HTTP_PROXY = "c1proxy.frb.org:8080")
+Sys.setenv(HTTPS_PROXY = "c1proxy.frb.org:8080")
+Sys.setenv(SPARK_HOME = "/usr/hdp/current/spark2-client")
+Sys.setenv(SPARK_CONF_DIR= "/usr/hdp/current/spark2-client/conf/")
+
+library(knitr)
+library(rmarkdown)
+library(expm)
+#library(rmutil)
+#library(matlib)
+#library(mnormt)
+
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+Particle_Filtering_Example = function(n,m) {
+	
+	#####  Establishing Sigma Values
+		sigma_V = .2
+		sigma_W = .1
+	
+	##### Creating storage vectors for X, Y, X_upperQuantile, X_lowerQuantile
+		X = rep(0, n)
+		Y = rep(0, n)
+		X_upperQuantile = rep(0,n)
+		X_lowerQuantile = rep(0,n)
+
+	
+	###### Starting everything with t = 1 
+		X[1] = rnorm(1, 0, sigma_V)
+		X_prior = rnorm(m, 0, sigma_V)
+		Y[1] = X[1] + rnorm(1,0, sigma_W)
+		weights = dnorm(Y[1], X_prior, sigma_W)
+		weights = weights/sum(weights)
+		X_post = sample(X_prior, m, replace = TRUE, prob = weights)
+		X_upperQuantile[1] = quantile(X_post, .975)
+		X_lowerQuantile[1] = quantile(X_post, .025)
+
+	
+	for (j in 2:n){
+		 #########  calculating prior ##########
+			X_prior = rnorm(m, X_post, sigma_V)
+			
+		######## simulating next value of X and Y ###########
+			X[j] = X[j-1] + rnorm(1, 0, sigma_V)
+			Y[j] = X[j] + rnorm(1, 0, sigma_W)
+			
+		####### calculating posterior  ############
+			weights = dnorm(Y[j], X_prior, sigma_W)
+			weights = weights/sum(weights)
+			X_post = sample(X_prior, m, replace = TRUE, prob = weights)
+			X_upperQuantile[j] = quantile(X_post, .975)
+			X_lowerQuantile[j] = quantile(X_post, .025)
+	}
+	
+	plot(Y, type = "l")
+	lines(X_lowerQuantile, type = "l", col = "red")
+	lines(X_upperQuantile, type = "l", col = "red")
+	
+}
+
+Particle_Filtering_Example(1000,100)
+```
+
+
+# Problem 1 
+Implement a particle filter for the underwaterVehicle.rds to estimate the position of the vehicle. 
+
+```{r}
+underwatervehicle <- readRDS("/home/c1imm01/FinancialMath/underwaterVehicle.rds")
+```
+
+```{r}
+	
+	#####  Establishing Sigma Values
+		sigma_V = .2
+		sigma_W = .1
+	
+	##### Creating storage vectors for X, Y, X_upperQuantile, X_lowerQuantile
+		X = rep(0, n)
+		Y = rep(0, n)
+		X_upperQuantile = rep(0,n)
+		X_lowerQuantile = rep(0,n)
+
+	
+	###### Starting everything with t = 1 
+		X[1] = rnorm(1, 0, sigma_V)
+		X_prior = rnorm(m, 0, sigma_V)
+		Y[1] = X[1] + rnorm(1,0, sigma_W)
+		weights = dnorm(Y[1], X_prior, sigma_W)
+		weights = weights/sum(weights)
+		X_post = sample(X_prior, m, replace = TRUE, prob = weights)
+		X_upperQuantile[1] = quantile(X_post, .975)
+		X_lowerQuantile[1] = quantile(X_post, .025)
+
+	
+	for (j in 2:n){
+		 #########  calculating prior ##########
+			X_prior = rnorm(m, X_post, sigma_V)
+			
+			
+		######## simulating next value of X and Y ###########
+			X[j] = X[j-1] + rnorm(1, 0, sigma_V)
+			Y[j] = X[j] + rnorm(1, 0, sigma_W)
+			
+		####### calculating posterior  ############
+			weights = dnorm(Y[j], X_prior, sigma_W)
+			weights = weights/sum(weights)
+			X_post = sample(X_prior, m, replace = TRUE, prob = weights)
+			X_upperQuantile[j] = quantile(X_post, .975)
+			X_lowerQuantile[j] = quantile(X_post, .025)
+	}
+	
+	plot(Y, type = "l")
+	lines(X_lowerQuantile, type = "l", col = "red")
+	lines(X_upperQuantile, type = "l", col = "red")
+	
+}
+
+Particle_Filtering_Example(1000,100)
+```
+

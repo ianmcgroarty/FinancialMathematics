@@ -1,0 +1,438 @@
+---
+title: "exam2"
+author: "Ian McGroarty"
+date: "5/10/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+Sys.setenv(HTTP_PROXY = "c1proxy.frb.org:8080")
+Sys.setenv(HTTPS_PROXY = "c1proxy.frb.org:8080")
+Sys.setenv(SPARK_HOME = "/usr/hdp/current/spark2-client")
+Sys.setenv(SPARK_CONF_DIR= "/usr/hdp/current/spark2-client/conf/")
+
+library(knitr)
+library(rmarkdown)
+library(expm)
+library(rmutil)
+library(mnormt)
+library(graphics)
+library(raster)
+library(sp)
+library(MASS)
+library(dplyr)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Problem 1
+Calculate the mean of a $t$ distribution with 4 degrees of Freedom using a Metropolis Hastings algorithm with candidate density: 
+
+## (a) $N(0,1)$
+
+```{r}
+# Parameters 
+Nsim <- 50000
+
+# Get the true distribution for comparison
+  tdist <- rt(n=Nsim,df=4)
+  print(paste0("True mean of t(4) is ,", mean(tdist)))
+  
+# Get the vectors for the loop
+  Accept <- 1
+  X <- rep(runif(1),Nsim)  
+
+# Run the Loop
+  for (i in 2:Nsim){
+    ## Get the candidate from N(0,1)
+     Y <- rnorm(n=1,mean=0,sd=1)  
+    ## (g(candidate)*q(X[i-1]))/(g(x[i-1])*q(candidate)
+     rho <- (dt(Y,df=4)*dnorm(X[i-1],mean=0,sd=1))/
+            (dt(X[i-1],df=4)*dnorm(Y,mean=0,sd=1))
+    ## Accept Y with rho
+      X[i] <- X[i-1] + (Y-X[i-1])*(runif(1)<rho)
+    ## Acceptance rate
+      Accept[i] <- (runif(1)<rho)
+  }
+  hist(X, freq=FALSE, main="Candidate Density - N(0,1)")
+  curve(dt(x,df=4),add=T)
+  print(paste0("Acceptance Rate based on N(0,1) ",(sum(as.numeric(Accept)))/(Nsim-1)))
+  print(paste0("Mean based on N(0,1) = ",mean(X)))
+  
+
+  
+```
+
+## (b) t with 2 degrees of freedom
+```{r}
+# Parameters 
+Nsim <- 50000
+
+# Get the true distribution for comparison
+  tdist <- rt(n=Nsim,df=4)
+  print(paste0("True mean of t(4) is ,", mean(tdist)))
+  
+# Get the vectors for the loop
+  Accept <- 1
+  X2 <- rep(runif(1),Nsim)  
+
+# Run the Loop
+  for (i in 2:Nsim){
+    ## Get the candidate from t(2)
+     Y <- rt(n=1,df=2)  
+    ## (g(candidate)*q(X[i-1]))/(g(x[i-1])*q(candidate)
+     rho <- (dt(Y,df=4)*dt(X2[i-1],df=2))/
+            (dt(X2[i-1],df=4)*dt(Y,df=2))
+    ## Accept Y with probability rho
+      X2[i] <- X2[i-1] + (Y-X2[i-1])*(runif(1)<rho)
+    ## Acceptance rate
+      Accept[i] <- (runif(1)<rho)
+  }
+  print(paste0("Acceptance Rate based on t(2) ",(sum(as.numeric(Accept)))/(Nsim-1)))
+  print(paste0("Mean based on t(2) = ",mean(X)))
+  hist(X2, freq=FALSE, main="Candidate density - t(2)")
+  curve(dt(x,df=4),add=T)
+  
+  
+```
+
+
+## (c) Compare
+The t distribution with 2 degrees of freedom has a *slightly* higher acceptance rate than the normal distribution which implies that it is more efficient. However, the acceptance rates are VERY close, and in some cases better for the normal. The normal candidate density seems to lead to an acceptance rate of around 90-92 percent and teh t(2) candidate around 91-92 percent. I've also plotted below the convergence the mean over the iterations. The red line shows the convergence for the normal density and the blue line shows the convergence for the t(2) distribution. While it is consistently very close, I'd have to say that the t(2) is more efficient than the normal. 
+
+```{r}
+mean.normcand <- cumsum(X)/1:Nsim
+mean.t2 <- cumsum(X2)/1:Nsim
+
+plot(mean.normcand, type='l',col='red',ylim=c(-0.5,0.5), main="Convergence to E[t(4)]",xlab="Iterations",ylab="Mean")
+lines(mean.t2,col='blue')
+```
+
+
+
+# Problem 2
+Assume that X has the density $F_X(x) such that 
+$$ f_X(x) = \frac{4}{\beta^3\sqrt{\pi}}x^2\cdot e^{-x^2/\beta^2} $$
+With $0<x<\infty $ and $\beta = 2$. Use Monte Carlo Methods to estimate the values of $E(X^2)$ and $P(1\leq X \leq 4)$ as efficiently as possible. Use importance sampling. 
+
+I use importance sampling using an exponential distribution. Below I've included the algorithm for the set up. And then I go into the simulation. 
+$$\begin{align*}
+E_f(h(X)) &= \int h(x) \frac{f(x)}{g(x)}g(x)dx = E_g[\frac{h(x)f(x)}{g(x)}] && \text{Importance Sampling} \\
+&= E_g[\frac{x^2 \cdot (\frac{4}{\beta^3\sqrt{\pi}}x^2\cdot e^{-x^2/\beta^2})}{e^{-x}}]
+\end{align*}$$
+
+
+```{r}
+# Set parameters
+    Nsim <- 100000
+    beta <- 2
+    
+# Set functions
+  fx <- function(x){
+    (4*x^2 *exp((-x^2/(beta^2))))/(beta^3*sqrt(pi))
+  }
+  hx <- function(x){
+    x^2
+    }
+  
+  #plot(fx,xlim=c(0,6))
+
+# Importance Sampling
+  # Simulate values from g(x) using expnential distribution
+    gx <- rexp(Nsim)
+  # Compute h(x)
+    hX <- hx(gx)
+  # Get the density weight [f(x)/g(x)]
+    wX <- fx(gx)/dexp(gx)
+  # Compute values of X
+    X <- wX * hX
+    
+  # Average of hx
+    mean.X <- cumsum(X)/(1:Nsim)
+  # Get the variation from the mean for everyvalue of hx
+    var.X <- sqrt(cumsum(X-mean.X)^2)/(1:Nsim)
+  # Mean & Variance
+    print(paste0("The function converges to a mean of ",mean.X[Nsim]," and a variance of ",var.X[Nsim]))
+      
+        
+  ## Graph
+     plot(mean.X,ylab="",type='l',lwd=2,ylim=c(5,7),main="Convergence of E[x^2] from Importance Sampling")
+     lines(mean.X+2*var.X,col="red",lwd=1)
+     lines(mean.X-2*var.X,col="red",lwd=1)
+     abline(h=mean.X[Nsim], col = "blue")
+  
+```
+
+To find the $P(1\leq X \leq 4)$ we need to adjust the candidate density. Since it is bounded I will use a candidate density of $U[1,4]$. This will allow us to sum over $f(x)$ and find that $P(1\leq X \leq 4) \approx 0.29$
+
+```{r}
+# Set parameters
+    Nsim <- 100000
+    beta <- 2
+    
+# Set functions
+  fx <- function(x){
+    (4*x^2 *exp((-x^2/(beta^2))))/(beta^3*sqrt(pi))
+  }
+
+# Importance Sampling
+  # Simulate values from U[1,4]
+    gx <- runif(Nsim,1,4)
+  # Get the density weight [f(x)/g(x)] - in this case g(x) is uniform so no need to divide.
+    wX <- fx(gx)
+  # Compute values of X
+    X <- wX 
+    
+    probability <- sum(X)/Nsim
+print(paste0("The probability 1 < x < 4 for pdf f(x) is ", probability))
+```     
+            
+ 
+
+# Problem 3 
+Suppose the random variables X and Y both take on values in the interval (0,B). Suppose that the conditional densities are: 
+$$\begin{align*}
+f(x|y) &= C(y)exp(-xy) \\
+f(y|x) &= C(x)exp(-xy) \\
+\end{align*}$$
+
+It is the *amazing* property of Gibbs sampling that the joint distribution $f(x,y)$ only depends on the conditional distributions. It relies the fact for markov chains $X_t$ depends only on $X_{t-1}$. We can apply this directly to the equations above using the exponential distribution. 
+1. Generate an initial $x_1$, this can be anything but given the look of the distribution we can *guess* that the r command *rexp(1,1)* will give a resonable initial guess. 
+
+2. Evaluate $C(x_1)$
+3. Generate $y_1 \sim C(x_1)\cdot Exp(-x_1)$
+4. Generate $x_2 \sim C(y_1)\cdot Exp(-y_2)$ 
+5. Repeate steps 3 and 4 for $t \in T$
+
+I can demonstrate an example of this by letting $C(x)=x$ and $C(y)=y$ and $B=1$
+```{r, echo=FALSE, include=FALSE}
+# First I need to see if I can simluate from x*exp(-y)
+  ## Set the function  
+    fx <- function(x){
+        2*exp(-2*x)
+      }
+    #plot(fx)
+  ## Density from R
+    x <- rexp(1000,2)
+    
+  ## Inverse Transform
+    U <- runif(1000,0,1)
+    IVX <- (-1/2)*log(U)  
+  
+  ## Plots  
+    hist(x,freq=FALSE, main="Exp from R")
+    plot(fx,add=TRUE,col="red",xlim=c(0,10))
+    
+    hist(IVX,freq=FALSE, main="Exp from Inverse Transform")
+    plot(fx,add=TRUE,col="red",xlim=c(0,10))
+  
+```
+
+```{r}
+# Set parameters 
+  Nsim <- 1000
+
+# Set Initial X_1 based on exponential distribution
+  X0 <- rexp(n=1,1)
+  X <- X0
+# Set inital Y_1  (outside the loop cuz it is Y1)
+  Y <- X0*rexp(n=1,X0)
+  
+# Run the loop 
+  for (i in 2:Nsim){
+    # Sample X
+      X[i] <- Y[i-1]*rexp(n=1,Y[i-1])
+    # Sample Y
+      Y[i] <- X[i-1]*rexp(n=1,X[i-1])
+  }
+```
+
+
+# Problem 4
+## (a) 
+In as much detail as you can, explain the concept of Rao-Blackwellization and why it's
+helpful.
+
+Rao-Blackwellization is a techinque used for variance reduction. It relies on the notion that the sufficient statistic, $\theta$, contains enough information about a distribution, $f$ that will allow you to sample from it. Since the sufficient statistic is typically simpler, sampling from $\theta$ will result in a lower variance when used with a conditional function, $g(x|\theta)$,  that is an estimator for $f$ i.e. $Var(E[g(x)|\theta])\leq Var(g(x))$
+
+## (b) 
+$$\begin{align*}
+log(X) &\sim N(\mu,\sigma^2) \\ 
+X &\sim lognormal(0,1) \\
+log(Y) &\sim 9 + 3\cdot log(X) + \epsilon \\
+\epsilon &\sim N(0,1) \\
+log(W) &\sim N(\mu,\sigma^2) \implies E(W) = exp(\mu + \sigma/2)
+\end{align*}$$
+Estimate $E(\frac{Y}{X})$. 
+
+Compare the performance of the standard Monte Carlo estimator and the Rao-Blackwellized estimator of this expectation. 
+
+I honestly can't figure this one out. So I did my best. 
+```{r}
+# Parameters
+  mu <- 0
+  var <- 1
+  sd <- sqrt(var)
+  Nsim <- 1000
+
+# Function
+  FY <- function(x,e){
+    (9 + 3*(x) + e)
+  }
+
+# Generate X values
+  logX <- rlnorm(Nsim,mean=mu,sd=sd)
+  X <- exp(logX)
+
+# Generate e values
+  E <- rnorm(Nsim,0,1)
+
+# Evaluate Y
+  logY <- FY(logX,E)
+  Y <- logY
+  
+# Evaluate Y/X
+  Y_X <- Y/X
+  
+# Mean 
+  mean.Y_X <- cumsum(Y_X)/(1:Nsim)  
+  plot(mean.Y_X, type='l')
+
+
+```
+
+
+# Problem 5 
+Explain what the Bootstrap and Jackknife methods are to Botts, James Botts.
+
+The term Bootstrap comes from the phrase "Pick yourself up from your bootstraps" meaning that you need to succeed in your endeavors without someone needing to "help you up". The method follows from this because it takes a small amount of information and compounds itself so as to accomplish much more! 
+
+To explain bootsrapping lets say you have some patients with a rare disease you've never seen before. You are pretty sure that the disease has the unforunate side effect of making the patients' nose hair grow very long. You've measured the nose hairs of your 10 patients, but inorder to make any conclusions you need to figure out what the average nose hair length is for someone with the disease. You don't think there is anything special about the patients who came to see you other than the diesase, so they are probably a reasonably representative sample of anyone with the affliction. So you imagine "what if doctors offices all around the country are noticing the same trend?" 
+
+You apply the bootstrap by sampling the nose hair length of your 10 patients N times. In statistics this is called, "sampling from the empirical distribution function" which just means that you're giving every one of your patients equal importance in the data.  This gives you N samples of 10 patients, all with the same disease and weirdly long nose hair. The following data shows 3 samples of the original 10 patients, where each column represents one sample of 10 patients, and each number is the length of a patients nose hair (in centimeters). 
+```{r}
+# The nose hair length (in centimeters) for your 10 patients. 
+original.data <- c(12,16,15,12,10,9,11,10,13,11) 
+all.data <- original.data %>% as.data.frame()
+vector.data <- original.data
+
+for (i in 2:1000){
+  all.data[,i]<- sample(original.data,10,replace=TRUE)
+  vector.data <- c(vector.data,all.data[,i])
+}
+
+as.matrix(all.data[1:3])
+```
+
+Now that you have some more observations, you can start trying to learn more about the data. You may be interested to know what the average nose hair length is for someone with the disease. What you can do is take the average of each of the sample populations (the average of the 10 patients from each doctors office). This will give you a much better idea of what the true population mean is, since you have a larger sample. You can see, in the graph below that the average for all the samples follows something close to a normal distribution! 
+```{r}
+average.nosehair <- all.data %>% summarise_all(mean)
+average.nosehair <- as.vector(t(average.nosehair))
+hist(average.nosehair, main="Average Nose Hair Length for 100 Doctors Offices")
+```
+
+You may remember from your statistics class that the normal distribution is particularly powerful in detailing information such as variances and confidence intervals. Suppose you get a call from your son Carsten who says that he has a student with nose hair 11 centimeters long! You want to conduct a hypothesis to figure out if this student might have the disease. Well, it is easy enough to figure out if this student's nose hair is within the "normal range" for someone with the disease. Just see how often the mean is lower than 11 centimeters! You see from your data that only about 10.2\% of people with the disease have nose hiar below 11 centimeters. 
+```{r}
+(sum(average.nosehair<=11)/1000)*100
+```
+
+It is clear that the bootstrap can add power to a small sample of data but you must be careful when using it. You should be sure that the sample data are representative of the whole. It is also difficult to use the bootstrap when the observations are correlated. For example, if (rather than 10 patients) the data above was from 1 patient taken over 10 periods of time. For instances such as this we can emply the jackknife bootstrap method!
+
+Rather that sampling randomly from the population, the jackknife *cuts* one observation from the sample. One can consider the sample (1,2,3,4,5,6). The jackknife takes 6 samples removing one each time:
+$$\begin{align*}
+\text{Sample 1:} && 2,3,4,5,6 \\
+\text{Sample 2:} && 1,3,4,5,6 \\
+\text{Sample 3:} && 1,2,4,5,6 \\
+\text{Sample 4:} && 1,2,3,5,6 \\
+\text{Sample 5:} && 1,2,3,4,6 \\
+\text{Sample 6:} && 1,2,3,4,5 \\
+\end{align*}$$
+
+The jackknife is better at handling correlated data, intuitively time series. If, in the previous example, we were measuring one patient over 10 time intervals, the length of the nose hair in one period would certainly be related to the length in the previous period. Now, this means we can't take as many samples as we could with the bootstrap so typically we would need a larger starting sample. 
+
+One of the primary limitations of the jackknife is that is isn't good at measuring data that doesn't vary much when you remove one observation. The cannonical example of this is the median. Removing on value from a set of observations will only change the median twice (since it will be before or after the median). Take the samples above, the median for samples 1,2, and 3 is 4. The median for samples 4,5, and 6 is 3.It is clear that this will not give us much more information about the data!   
+
+# Problem 6
+One of the homework problems I had you do was to illustrate that the bootstrap isn't a very good way of estimating $\theta$, for the $Unif(0,\theta)$ distribution. Show the same thing for the mean of a cauchy distribution.
+
+First lets think about it intuitively. Bootstrap relies on sampling from a sample over and over so the sample must be a pretty good representation of the data. BUT the cauchy distribution is the Wile E. Cayote of distributions it doesn't have a stable mean or variance. So it makes sense that the bootstrap wouldn't really work. 
+
+To show this, I run a bootstrap with 10,000 iterations estimating the mean of the sample of size 10 simulated from a cauchy distribution. Note that this didn't seem to work well for the base cauchy so I used *rcauchy(7)*. I then do a histogram of the simulated means. Notice that this is clearly not normaly distributed as we would normally require from the bootstrap. Since the means are not normally distributed around any particular value, we can not apply the central limit theorm and get a good estimate of the mean.
+
+```{r, eval=TRUE}
+Nsim <- 10000
+
+# Get the initial distribution
+  cauchy.sample <- rcauchy(10,7)
+    sample <- round(cauchy.sample,2) %>% toString()
+    print(paste0("We are going to sample from 10 observations (derived from a cauchy distribution:",sample))
+    
+# Sample from it with the Bootstrap Bill Turner 
+  boot.theta <- c()
+  for (i in 1:Nsim){
+  bootstrap <- sample(cauchy.sample,size=10,replace=TRUE)
+  boot.theta[i] <- mean(bootstrap)
+  }
+  boot.mean <- cumsum(boot.theta)/(1:Nsim)
+  
+  hist(boot.theta, main="Histogram of Bootstraped means from Cauchy(7)")
+```
+
+
+# Problem 7 
+Consider the stochastic differential equation (SDE): 
+$$ dX(t) = f(X(t))dt+g(X(t))dW(t) $$
+
+What is the Euler-Marumaya solution to such an equation? 
+
+Basically what the Euler-Marumaya *approximation* does is to discretize the time intervals $(dt)$ and simulate the random *noise*, $W(t)$. I'll define this numerically this out to the best of my ability. Let $0<s<t<T$ be time increments from [0,T], the time span of X. Let there be N discrete time increments, $\tau_i, \cdots \tau_N$, on T. So we have $dt =T/N$. So we can plug these into the SDE to get:
+$$ X_i = X_{i-1} + f(X_{i-1})\cdot (T/N)+ g(X_{i-1})\cdot (W(\tau_i)-W(\tau_{i-1}))$$
+
+Now with a computer we can simulate N values of $X_i$ using a random number generator for $W(\tau_i)-W(\tau_{i-1})$ since the difference is an independent random variable. 
+
+I'll demonstrate this with an example (Black Scholes) with $f(x) = \lambda X$ and $g(X)= \mu X$. So we have:
+
+$$ \begin{align*}
+\text{Euler-Marumaya Approx:} && X_i &= X_{i-1} + \lambda X_{i-1}(T/N) + \mu X_{i-1} (W(\tau_i)-W(\tau_{i-1})) \\
+\text{Black-Scholes Solution:} && Y_i &= Y_{0}e^{(\lambda-\mu^2/2)}t+\mu W(t) \\
+\end{align*}$$
+
+```{r}
+# Set the paramters
+    Nsim <- 500
+    X <- rep(1,Nsim)
+    Time <- 1
+    dt <- (Time/Nsim)
+
+    lambda = 1
+    mu = 1
+
+# Empty vetors fro the loop
+    timesteps <- seq(0,Time,dt)[1:Nsim]
+    W <- rep(0,Nsim)
+    
+# Loop the loop and pull and your shoes are looking cool
+  for (i in 2:Nsim){
+    # Get your random noise
+      dW <- rnorm(n=1,mean=0,sd=sqrt(dt))
+    # X
+      X[i] <- X[i-1] + lambda*dt*X[i-1] + mu*dW*X[i-1]
+      W[i] <- W[i-1] + dW
+  }
+truesolution = X[1]*exp((lambda-mu^2/2)*timesteps + mu*W)
+    
+# Plot 
+  plot(timesteps,X, col = 'red',type='l')    
+  points(timesteps,truesolution, col='blue',type='l')
+    
+```
+
+
+Notice in the plot above how the red dots generated from the Euler-Marumaya approximation are very close to the 'true' solution derived from Black Scholes. The intuition as to why this holds is fairly strightforward. The integration is definitionally a sort of Reiman sum with smaller and smaller increments. What the program allows us to do is take very 'small' increments and therby evaluate the integral (the change) over the increment. Then all we need to do is add this change to the total and that gives us the level following the change. The other part of this revolves around the random variable $W(t)$, the "noise". Now, the noise is defined as an independent random variable, if this were not the case the approximation wouldn't work. But because we are able to simulate the noise by generating an indepdent random variable, we can compute the (discretized) $dW$ term, even though we can not actually differentiate it! 
+
+The two types of convergence for SDEs are aptly named "strong" and "week" convergence. Strong convergence is the average error between the Eular-Marumaya approximation and the actual solution. Weak convergence is the difference between the average of the two. The sequences are said to converge with power $\gamma$ if the difference is less than the size of the time step $\tau^{\gamma}$. Below I've expressed this mathematically, but you can think of it like a limit theorem, where $\tau$ is the $\epsilon$ and we are curious if the approximation converges to the true value. 
+
+From above I denote the solution from the EM approximation as $X_i$ and the black scholes solution $Y_i$.
+$$\begin{align*}
+\text{Strong Convergence:} && E|Y_i-X_i| \leq \tau^{\gamma}\\
+\text{Weak   Convergence:} && |E(Y_i)-E(X_i)|\leq \tau^{\gamma} \\
+\end{align*}$$

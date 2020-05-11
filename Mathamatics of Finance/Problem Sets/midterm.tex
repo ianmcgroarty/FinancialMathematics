@@ -1,0 +1,371 @@
+\documentclass[12pt]{article}
+\usepackage[T1]{fontenc}
+%\usepackage[latin9]{inputenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{setspace}
+\usepackage{rotating}
+\usepackage{graphics}
+\usepackage[round]{natbib}
+%\usepackage{graphicx}
+%\usepackage{float} 				%allows you to float images
+\usepackage{latexsym}
+\usepackage{bbding}
+%\usepackage {moresize}
+\usepackage{listings}
+\usepackage{bbding}
+\usepackage{blindtext}
+\usepackage{hhline}
+\usepackage{tikz}
+\usetikzlibrary{trees}
+%\usetikzlibrary{shapes,backgrounds}
+%\usepackage{pgfplots}
+%\usetikzlibrary{arrows}
+\usepackage{enumitem}
+\doublespacing
+%\usepackage{geometry}
+\usepackage{amsthm}
+\usepackage{color}
+%\usepackage{array,multirow}
+%\usepackage{subcaption}
+%\usepackage{pst-plot}
+%	\psset{xunit=15mm}
+%\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=.5in,rmargin=.5in}
+\setlength{\parskip}{\bigskipamount}
+\setlength{\parindent}{0pt}
+\usepackage{multicol}
+
+\newenvironment{problem}[3][Problem]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+
+\newcommand{\barr}{\bar{r}}
+\newcommand{\infsum}{\sum_{n=1}^{\infty }}
+
+\title{Midterm Exam \thanks{Problems:}}
+\author{Ian McGroarty \\
+	Course Number: 625.641}
+\date{July 9, 2019}
+
+\begin{document}
+
+\maketitle
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{problem}{1 (30 points)} \\
+Consider the following stocks:  
+AT\&T Inc. (T),
+ Verizon Communications Inc.(VZ) and 
+ T-Mobile US Inc. (TMUS). Use 
+ \underline{daily adjusted closing prices} form 
+ January 7, 2019 to June 1, 2019
+  as historical data. As an Investor wants to build a portfolio by buys these stocks.
+ The \textbf{amount invested in Verizon (VZ) should be twice the amount invested in TMUS.} \\
+\textbf{ 1) Estimate the mean daily rate of return and daily standard deviation of these stocks as well as their covariances.}\\
+From the paramter estimation we have the following mean weekly return (calculations shown in xlsx sheet: prob1) $r_{VZ} = -0.00015, \ r_T = 0.00029$ and weekly variances and covariances; $VAR_{VZ}=0.00014, \ VAR_T = 0.00014$ and $COVAR_{VZ,T} = 0.00007$.\footnote{The values expressed here are the variance and covariance for the returns. This is how it was performed in the homework. However, in the book it was my understanding that they were using variance and covariance based on the values - in our case the adjusted daily close.}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+2) Using the parameters estimate in question 1) find the weights of the portfolio with minimum variance. Deduce the return of that portfolio. \\
+THe optimal portfolio is given by 
+$$ \alpha_{VZ} = \frac{VAR_T - COVAR_{VZ,T}}{VAR_{VZ}-2COVAR_{VZ,T}+VAR_T} = 0.5$$
+Because of the nearly identical variances in VZ and T, the optimal portfolio is to have equal shares of each stock. However, by construction, the problem requires that the amount invested in Verizon be twice that of T so we will invest 0.33 in T and 0.66 in Verizon. To find the return of the portfolio, I will assume that we have \$1,000,000 to invest and you buy on January 7, 2019 and sell May 31, 2019. Using the adjusted closing prices for those dates we have: 
+$$n_{VZ} = \frac{666,666}{55.56}\approx 12,000 \; shares. \; \& \; n_T = \frac{333,333}{29.908} \approx 11,145 \; shares$$
+We then sold those shares at: $12000*54.35 = \$652,200 \; \& \; 11145*30.58 = \$340,814$. Giving a total return of $\frac{652200+340814}{1000000}=0.993.$ And a rate of return of $\frac{993014-1000000}{1000000}=-0.00699$. 
+\end{problem}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\begin{problem}{2 (50 Points)} \\
+Consider \underline{monthly adjusted closing prices} of 
+Apple Inc. (APPL), 
+Amazon.com Inc. (AMZN), 
+Alphabet Inc. (GOOG) and 
+Facebook Inc (FB) from 
+February 2, 2015 to December 28, 2018. 
+
+1. Using Excel or any other spreadsheet software find the 
+expected monthly rates of return and 
+the standard deviation of monthly rates of return for each of these stocks. Moreover, find the 
+covariance of monthly rates of monthly rates of return for each pair of these stocks. 
+
+\textbf{Solution} All of these calculations are demonstrated in the excel file under the sheet: Prob 2. For ease I've included the tables below. For the covariance matrix, I used the covariance for the rates of return. In the excel sheet I've also calculated the covariance between the values for monthly adjusted close. \\
+\begin{tabular}{l|cccc}
+					&APPL	&AMZN	&GOOG	&FB\\
+					\hline
+Average Monthly Rate of Return	&0.0088	&0.0339	&0.0154	&0.0130 \\
+Monthly Standard Deviation	&0.07529	&0.08624	&0.06167	&0.06266
+\end{tabular}
+
+\begin{tabular}{l|cccc}
+Covariance Matrix - Rates of Return	&APPL	&AMZN	&GOOG	&FB \\
+\hline
+APPL	&0.00566	&0.00220	&0.00165	&0.00176 \\
+AMZN	&0.00220	&0.00743	&0.00370	&0.00251 \\
+GOOG	&0.00165	&0.00370	&0.00380	&0.00205 \\
+FB	&0.00176	&0.00251	&0.00205	&0.00392 
+\end{tabular}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+2. Suppose that at the end of the trading day on 
+January 3, 2019
+you want to build a portfolio with these four stocks using the monthly statistical parameters obtained in question 1. Let 
+$$ \bar{r} = \frac{\barr APPL + \barr AMZN + \barr GOOG + \barr FB}{4}$$
+be the average of the expected monthly rates of return for these stocks. Find the weights of the minimum variance portfolio with expected rate of return $\barr$. Moreover, if on that data you have \$1,000,000, deduce the number of shares of each of these stocks you will have in your portfolio. \\
+\textbf{Solution} First see that:
+$$ \bar{r} = \frac{\barr_P+ \barr_Z + \barr_G + \barr_F}{4} = \frac{(0.008)+(0.0339)+(0.0154)+(0.0130)}{4} = 0.0177$$
+Next, to find the minimum variance point we solve the system of equations $A\vec{x}=b$ where A is the covariance matrix, x are the weights, and b is a vector of 1s. Then we normalize the $\vec{x}$ so that they sum to 1 to obtain the vector of weights $\vec{w}$. This can all be done in R to yield: 
+$$\vec{x}=\begin{bmatrix}92.95 & -26.20 & 172.59 &139.37 \end{bmatrix} \; \& \; 
+\vec{w}=\begin{bmatrix}0.2454 & -0.0691 & 0.4557 & 0.3680 \end{bmatrix} $$. Second take the Lagrangian (equation 6.5a pg 159) and set $\mu = 0$ and $\lambda = 1$. We thus need to solve the matrix $A\vec{x}^2=\barr $ where $\barr $ is a vector of the mean rates of return. And then normalize to fine $\vec{w}^2$ Giving us: 
+$$\vec{x}^2=\begin{bmatrix}-0.3103 & 4.862 & -1.0137 & 0.861 \end{bmatrix} \; \& \; 
+\vec{w}^2=\begin{bmatrix}-0.0705 & 1.10512 & -0.230 &  0.196  \end{bmatrix} $$
+Both of these results are efficient solutions for the Markovitz problem. By the two fund theorem, all efficient portfolios are a combination of these two: $\alpha \vec{w} + (1-\alpha )\vec{w}^2 $ In this case we will set $\alpha = 0$ since (by construction) we wanted weights that correspond to the average expected monthly rate of return. Thus, the weights for this portfolio are $\vec{w}^2$ Note that we are shorting apple and Google in this scenario. So to make my life easier I will choose an $\alpha = 0.5$ so that we are not shorting any stocks, thus giving me a $\vec{w^3}=
+\begin{bmatrix}0.0874 &  0.5179 & 0.1126 & 0.2819 \end{bmatrix} $. Using these weights, the number of shares of each stock in my portfolio is: 
+\begin{align*} 
+n_{APPL} &= \frac{87400}{142.19} = 615.67 \; shares &&  n_{AMZN} = \frac{517,900}{1500.28} =345.20 \; shares \\ 
+n_{GOOG}& = \frac{112,600}{1016.06} = 110.80 \; shares &&  n_{FB} = \frac{281,900}{131.74} = 2139.80 \;  shares 
+\end{align*}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+3. Find the portfolio Variance.
+\textbf{Solution} To find the portfolio variance we need only multiply $A\vec{w}^3 $ where A is the variance covariance matrix in part 1 and $\vec{w}^3 $ is the weight vector found in part 2. This will give us a variance vector, then we need to multiply by $\vec{w^T}^3 $ to give us the portfolio variance. 
+\begin{align*}
+\begin{bmatrix}
+0.0056	&0.0022	&0.0016	&0.0017 \\
+0.002	&0.0074	&0.0037	&0.0025 \\
+0.0016	&0.0037	&0.0038	&0.0020 \\
+0.0017	&0.0025	&0.0020	&0.0039 
+\end{bmatrix}
+&\cdot
+\begin{bmatrix}
+0.087 \\  0.518 \\ 0.113 \\ 0.282 
+\end{bmatrix}
+=
+\begin{bmatrix}
+0.00232 \\
+0.00517 \\
+ 0.00308 \\
+ 0.00279 
+\end{bmatrix} \\
+\begin{bmatrix}
+0.087 &  0.518 & 0.113 & 0.282 
+\end{bmatrix}
+&\cdot
+\begin{bmatrix}
+0.00232 \\
+0.00517 \\
+ 0.00308 \\
+ 0.00279 
+\end{bmatrix}
+= 0.004017
+\end{align*}
+Thus, the portfolio variance associated with weights $\vec{w}^3$ is 0.004017. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+4. Using the \textbf{NASDAQ Composite (IXIC)} as the Market and the same historical data
+(monthly adjusted closing prices form February 2, 2015 to December 28, 2018).
+\textbf{Compute the Beta of each of these stocks.}\\
+\textbf{Solution} The expected return of of IXIC is shown in the excel sheet Prob2 to be 0.0071. The variance of IXIC is simply $\sigma^2 = (0.0399)^2 = 0.001596$. The full covariance matrix for the four stocks and IXIC is calculated in excel to be:\\
+\begin{tabular}{l|cccc}
+Covariance Matrix &	Var IXIC	&Beta	&Jensen	&Sharpe \\
+\hline
+IXIC	&0.0016	& & & \\		
+APPL	&0.0019	&1.22487&	-0.00150	&0.0889 \\
+AMZN	&0.0026	&1.64463&	-0.02048	&0.3684 \\
+GOOG	&0.0017	&1.08616&	-0.00114	&0.2154\\
+FB	&0.0012	&0.76576&	0.00255	&0.1740
+\end{tabular}
+
+The beta for each stock is given by formula 7.3 (pg 177): $\beta_i = \frac{\sigma_{iM}}{\sigma^2_M}$. Using the covariance matrix above we see that: 
+\begin{align*}
+\beta_{APPL} &= \frac{0.001955}{0.001596} = 1.22 &  \beta_{AMZN} = \frac{0.002625}{0.001596} = 1.64 \\
+\beta_{GOOG} &= \frac{0.001733}{0.001596} = 1.086 &  \beta_{FB} = \frac{0.0.00122}{0.001596} =  0.766\\
+\end{align*}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+5. If the monthly risk-free rate if $r_f = 0.00208$ compute the Jensen and Sharpe indexes of each of these stocks. Derive the Jensen and Sharpe indexes of your portfolio. \\
+\textbf{Solution} To calculate the Jensen and Sharpe indexes we can use the formula for the Jensen Index (pg 186): $$\hat{\barr } - r_f = J + \beta (\hat{\barr } - r_f) = \hat{\barr } - 0.00208 = J + \beta (\hat{\barr } - 0.00208)$$
+And to calculate the Sharpe Index we use the formula for Sharpe index (pg 187):
+$$\hat{\barr } - r_f = S\sigma_M $$
+The calculations are on the prob2 sheet and the values are displayed in the covariance matrix in part 4. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+6. Using the \underline{adjusted closing prices} on 
+July 3, 2019 find the\textbf{ market value of your portfolio and the rate of return of your investment.}\\
+\textbf{Solution} Recall the number of shares of each stock in the portfolio:
+\begin{align*} 
+n_{APPL} &= \frac{87400}{142.19} = 615.67 \; shares &&  n_{AMZN} = \frac{517,900}{1500.28} =345.20 \; shares \\ 
+n_{GOOG}& = \frac{112,600}{1016.06} = 110.80 \; shares &&  n_{FB} = \frac{281,900}{131.74} = 2139.80 \;  shares 
+\end{align*}
+
+Multiplying by the July 3, 2019 adjusted closing price: 
+\begin{align*}
+MV_{APPL} &=615.61*204.414 = \$ 125,849  && MV_{AMZN} = 345.2*1939.00 = \$ 669,342 \\
+MV_{GOOG} &= 110.8*1121.58 = \$ 124,247.06 && MV_{FB} = 2139.8*192.2 = \$ 421,968.56 
+\end{align*}
+All of this gives a market value of \$ 1,341,431.53. My weights were imperfect because of rounding so, the rate of return given by: 
+$$ \frac{Received - Invested}{Invested} = \frac{1341231.53}{999800} = 34.17 \% $$
+
+ \end{problem}
+ 
+ 
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\begin{problem}{3 (20 points)}x   Consider the following random cash flow stream $(C_1,C_2, ...,C_n...)$. The nth year payment $C_n = n-1$ is received 
+with probability $p_n = \frac{1}{2^n}, n = 1,2,3,...$ For simplicity we assumer that the prevailing rate $r=0$. 
+
+\textbf{1. Compute the Expected Present Value}
+\begin{align*}
+E[PV] &= \sum_{n=1}^{\infty } C_np_n= \infsum (n-1)\cdot \frac{1}{2^n} = \infsum (\frac{n}{2^n} - \frac{1}{2^n})  \\
+&= \infsum \frac{n}{2^n} - \infsum \frac{1}{2^n} \text{ by Linear Property of Convergent Series} %%%%%%%%%%%%%%%%%%%%%%%
+\end{align*} 
+I break this up into two parts here ad show the results of each of the sums separately. First, show $ \sum_{n=1}^{\infty }\frac{n}{2^n} = 2 $. 
+\begin{align} 
+\infsum  x^n &= \frac{1}{1-x} && \text{Identity} \\ %%%%%%%%%%%
+ \infsum nx^{n-1} &= \frac{1}{(1-x)^2} && \text{Take the derivative}\\
+ \infsum nx^{n} &= \frac{x}{(1-x)^2} && \text{Multiply by x} \\
+ \infsum n\cdot (\frac{1}{2})^2 = \frac{n}{2^n} &= \frac{1/2}{1/4}=2 && x=\frac{1}{2}
+\end{align}
+Now to show that $\infsum \frac{1}{2^n} = 2$. Let $x=1/2 \implies \infsum x^n = \frac{1}{x-1} = 2$ 
+Thus, $ E[PV] = \infsum C_np_n = \infsum \frac{n}{2^n} - \infsum \frac{1}{2^n} = 2-2= 0$
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\textbf{2. Compute the Variance of the Present Value. }\\
+By equation 6.2 (pg 143) $var(x) = E(x^2) - \bar{x}^2$. We calculated $E[PV] = 0$ in part 1 and $0^2=0$. Thus, 
+\begin{align*}
+var(PV) &= E(x^2) = \infsum C^2 p_n \\ 
+&= \infsum(n-1)^2 \cdot \frac{1}{2^n} = \infsum \frac{n^2 - 2n +1}{2^n} \\ 
+&= \infsum \frac{n^2}{2^n} - \infsum \frac{2n}{2^n} + \infsum \frac{1}{2^n}&& \text{ By Linear Property} 
+\end{align*} 
+Lets work backwards, the third term above was shown in part 1: $\infsum \frac{1}{2^n} =2$. The middle term can be simplified to $\infsum \frac{2n}{2^n} = n/2^{n-1}$. Using change of variable we have m=n-1: $(m+1)/2^m$ In lecture 3 module 2 we showed that $\infsum (m+1)\frac{1}{2^m} = \frac{1}{(1-x)^2}$ Thus, substituting $x=1/2 \implies \infsum \frac{2n}{2^n} = 4 $. For the first term we can start at equation 3 from part 1: 
+\begin{align*}
+  \infsum nx^{n} &= \frac{x}{(1-x)^2} \\
+  \infsum n^2x^{n-1} &= \frac{-x-1}{(1-x)^3} &&\text{ take the second derivative } \\
+  \infsum n^2x^{n} &= \frac{-x^2-x}{(1-x)^3} &&\text{ multiply by x} \\
+  &= \frac{-(1/2)^2-(1/2)}{(1-(1/2))^3} = 6
+\end{align*}
+Thus, $var(PV) = E(x^2) = \infsum C^2 p_n = \infsum \frac{n^2}{2^n} - \frac{2n}{2^n} + \frac{1}{2^n} = 6-4+2=4.$
+\end{problem}
+
+
+\end{document}
+
+
+
+% Set the overall layout of the tree
+
+
+
+
+\tikzstyle{level 1}=[level distance=3.5cm, sibling distance=3.5cm]
+\tikzstyle{level 2}=[level distance=3.5cm, sibling distance=2cm]
+
+% Define styles for bags and leafs
+\tikzstyle{bag} = [text width=4em, text centered]
+\tikzstyle{end} = [circle, minimum width=3pt,fill, inner sep=0pt]
+
+\begin{tikzpicture}[grow=right, sloped]
+\node[bag] {Bag 1 $4W, 3B$}
+    child {
+        node[bag] {Bag 2 $4W, 5B$}        
+            child {
+                node[end, label=right:
+                    {$P(W_1\cap W_2)=\frac{4}{7}\cdot\frac{4}{9}$}] {}
+                edge from parent
+                node[above] {$W$}
+                node[below]  {$\frac{4}{9}$}
+            }
+            child {
+                node[end, label=right:
+                    {$P(W_1\cap B_2)=\frac{4}{7}\cdot\frac{5}{9}$}] {}
+                edge from parent
+                node[above] {$B$}
+                node[below]  {$\frac{5}{9}$}
+            }
+            edge from parent 
+            node[above] {$W$}
+            node[below]  {$\frac{4}{7}$}
+    }
+    child {
+        node[bag] {Bag 2 $3W, 6B$}        
+        child {
+                node[end, label=right:
+                    {$P(B_1\cap W_2)=\frac{3}{7}\cdot\frac{3}{9}$}] {}
+                edge from parent
+                node[above] {$B$}
+                node[below]  {$\frac{3}{9}$}
+            }
+            child {
+                node[end, label=right:
+                    {$P(B_1\cap B_2)=\frac{3}{7}\cdot\frac{6}{9}$}] {}
+                edge from parent
+                node[above] {$W$}
+                node[below]  {$\frac{6}{9}$}
+            }
+        edge from parent         
+            node[above] {$B$}
+            node[below]  {$\frac{3}{7}$}
+    };
+\end{tikzpicture}
+
+
+\section{Definitions}
+\underline{Def: Forward Rate Formulas} (pg 79). The implied forward rate between times $t_1$ and $t_2$ is the rate of interset between those times that is consistent with a given spot rate curve. For Yearly compounding, the forward rate is:  
+\begin{align*}
+f_{i,j} =& [\frac{(1+s_j)^j}{(1+s_i)^i}]^{1/(j-i)}-1 \\
+ e^{s(t_2)t_2} =& e^{s(t_1)t_1}e^{f_{t_1,t_2}(t_2-t_1)}
+\end{align*}
+
+\underline{Discount Factor Relation} The discount facot between periods i and j is defined as $$ d_{i,j}=[\frac{1}{1+f_{i,j}}]^{j-i}$$ These factors satisfy the compounding rule: $d_{i,k}=d_{i,j}d_{j,k}$\\
+
+\underline{Def. Derivative (Ross pg 223)} Let F be a real valued function defined on an open interval contained a point a. We say f is differentiable at a, or f has derivative at a if the limit $$ f'(a) = \lim_{x \to a} \frac{f(x)-f(a)}{x-a} $$
+
+
+
+
+https://www.investopedia.com/university/advancedbond/bond-pricing.asp
+https://quant.stackexchange.com/questions/22288/duration-of-perpetual-bond
+http://people.stern.nyu.edu/gyang/foundations/sample-final-solutions.html
+http://pages.stern.nyu.edu/~jcarpen0/courses/b403333/07convexh.pdf
+https://web.stanford.edu/class/msande247s/2009/summer%2009%20week%205/Bond%20Formula%20Sheet.pdf
+
+
+\underline{Def: Forward Rate Formulas} (pg 79). The implied forward rate between times $t_1$ and $t_2$ is the rate of interset between those times that is consistent with a given spot rate curve. For Yearly compounding, the forward rate is:  
+\begin{align*}
+f_{i,j} =& [\frac{(1+s_j)^j}{(1+s_i)^i}]^{1/(j-i)}-1 \\
+ e^{s(t_2)t_2} =& e^{s(t_1)t_1}e^{f_{t_1,t_2}(t_2-t_1)}
+\end{align*}
+
+\underline{Discount Factor Relation} The discount facot between periods i and j is defined as $$ d_{i,j}=[\frac{1}{1+f_{i,j}}]^{j-i}$$ These factors satisfy the compounding rule: $d_{i,k}=d_{i,j}d_{j,k}$\\
+
+\underline{Def. Derivative (Ross pg 223)} Let F be a real valued function defined on an open interval contained a point a. We say f is differentiable at a, or f has derivative at a if the limit $$ f'(a) = \lim_{x \to a} \frac{f(x)-f(a)}{x-a} $$
+
+
+
+\begin{align*}
+\text{Maximize  } & 4x_1 +5x_2 +3x_3 +4.3x_4 + x_5 + 1.5x_6 + 2.5x_7 + 0.3x_8 + x_9 + 2x_{10} \\
+\text{Subject to } & 2x_1 + 3x_2 + 1.5x_3 + 2.2x_4 +0.5x_5 +15x_6 + 2.5x_7 +0.1x_8 + 0.6x_9 + x_{10} \leq 5 \\ 
+& x_1 + x_2 + x_3 + x_4 \leq 1 \\
+& x_5 + x_6 + x_7 \leq 1 \\
+& x_8 + x_9 + x_{10} \leq 1 \\
+\end{align*}

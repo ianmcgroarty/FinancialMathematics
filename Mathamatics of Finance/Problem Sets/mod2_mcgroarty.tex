@@ -1,0 +1,130 @@
+\documentclass[12pt]{article}
+\usepackage[T1]{fontenc}
+%\usepackage[latin9]{inputenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{setspace}
+\usepackage{rotating}
+\usepackage{graphics}
+\usepackage[round]{natbib}
+%\usepackage{graphicx}
+%\usepackage{float} 				%allows you to float images
+\usepackage{latexsym}
+\usepackage{bbding}
+%\usepackage {moresize}
+\usepackage{listings}
+\usepackage{bbding}
+\usepackage{blindtext}
+\usepackage{hhline}
+%\usepackage{tikz}
+%\usetikzlibrary{shapes,backgrounds}
+%\usepackage{pgfplots}
+%\usetikzlibrary{arrows}
+\usepackage{enumitem}
+\doublespacing
+%\usepackage{geometry}
+\usepackage{amsthm}
+\usepackage{color}
+%\usepackage{array,multirow}
+%\usepackage{subcaption}
+%\usepackage{pst-plot}
+%	\psset{xunit=15mm}
+%\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=.5in,rmargin=.5in}
+\setlength{\parskip}{\bigskipamount}
+\setlength{\parindent}{0pt}
+\usepackage{multicol}
+
+\newenvironment{problem}[2][Problem]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+
+\title{Problem Set 2 \thanks{Problems 1,2,3,4,5}}
+\author{Ian McGroarty \\
+	Course Number: 625.641}
+\date{June 11, 2019}
+
+\begin{document}
+
+\maketitle
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}{1}  Find the price of a 10\% bond with 30 years maturity and 5\% yield. \\
+\textbf{Solution} For this question we will use the \underline{bond price formula} (3.2 pg 53). We will have to make some assumptions about the bond though: I assume semi-annual payments, and a par value of 100, this will express the price as a percentage of par. With payments made twice a year ($m=2$) for 30 years, we can say that $n=60$. By assuming a par value of 100 $F=100$, the coupon payment is $10\%$ so $(C=100*.1=10)$.  And a 5\% yield means $\lambda = 0.05$
+\begin{align*}
+P&= \frac{F}{[1+(\lambda / m)]^n} + \frac{C}{\lambda }\{ 1- \frac{1}{[1+(\lambda / m)]^n}\}\\
+&= \frac{100}{[1+(0.05/2)]^60} + \frac{10}{0.05}\{1- \frac{1}{[1+(0.05/2)]^60} \} \\ 
+Price &= 20. 
+\end{align*}
+A price of 20 reflects that the price is 20\% of the par value of the bond. 
+\end{problem}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}{2}  Find the present value of the perpetual cash flow stream $(C_0,C_1,...,C_n,...)$ where the n-th year payment $C_n = n-1$ and the prevailing rate is 2\%  \\
+ \underline{Def: Perpetual Annuity Formula (pg. 45)} The present value P of a perpetual annuity that pays an amount A every period, beginning one period from the present is $$ P = \frac{A}{r}$$
+
+\textbf{Solution} I really don't understand what you mean by $C_n = n-1$. I figure it has something to do with time indexing but I honestly don't see how they relate since it is a payment. On the other hand, if n is literally just the position of the payment, so the cash flow stream is $(-1,0,1,2,3,4...)$ So it is a growing perpetual annuity. I couldn't find a formula to calculate this but maybe you could just use 1 (since it is infinite it'll just be 1+1, 1+1+1 idk). This would be $\frac{1}{0.02} = 50. $
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{problem}{3} Compute the duration and the modified duration of a perpetual annuity that pays \$10,000 at the beginning of each year, with the first such payment being 1 year from now. Assume the prevailing rate  \%3 is compounded yearly. \\
+ \underline{Def: Perpetual Annuity Formula (pg. 45)} The present value P of a perpetual annuity that pays an amount A every period, beginning one period from the present is $$ P = \frac{A}{r}$$
+
+\underline{Def: Modified Duration (pg. 60)} The derivative of price P with respect to yeild $\lambda $ of a fixed income security is: $ \frac{dP}{d\lambda } = - D_MP $ where $D_M = D/[1+(\lambda / m )$ is the modified duration. \\
+
+\textbf{Solution} First we find $\frac{dP}{d\lambda} = d(c\lambda^{-1}) = -\frac{c}{\lambda^2}$. By definition we know $P=c/\lambda $. Substituting these into the definition of modified duration: 
+$$D_M = -\frac{dP}{d\lambda }\cdot \frac{1}{P} =-(-\frac{c}{\lambda^2} \cdot \frac{1}{c/\lambda })=\frac{1}{\lambda} $$
+We can then calculate the Macaulay Duration following the note in the definition for modified duration: 
+$$D_M = \frac{D}{[1+(\lambda / m )]} \implies  \frac{1}{\lambda } = \frac{D}{1+(\lambda /m)} \implies D = \frac{1+(\lambda /m) } {\lambda }$$ 
+The problem states that the coupon payments are annual ($m=1$), the duration calculations do not depend on the coupon payment amount, and the prevailing interest rate $(\lambda = 0.03)$. So $D_M = 1/0.03 = 33.33$ and $D = 34.33$. I might have done something wrong because, I would've expected them to be basically equal. I mean I guess they are fairly close, but the perpetual annuity is forever, so shouldn't the modified duration be extremely close to the Macaulay duration? 
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}{4} Fine the convexity of a zero coupon bond in terms of the bond price P, maturity T, yield $\lambda $ and number of periods per year $m$. Find the limit as $m\rightarrow \infty $. \\
+\underline{Bond Price Formula (pg 53)} The price of a bond, having exactly n coupon periods remaining to maturity and a yield to maturity of $\lambda $ satisfies: 
+$$P= \frac{F}{[1+(\lambda / m)]^t} + \frac{C}{\lambda }\{ 1- \frac{1}{[1+(\lambda / m)]^t}\}$$
+
+\underline{Convexity formula (pg 66)} Convexity is the value of C defined as: $$ C = \frac{1}{P}\frac{d^2P}{d\lambda^2}$$
+\textbf{Solution} Well since the coupon payment is 0 the price is just $P= \frac{F}{[1+(\lambda / m)]^n}$ I will use wolfram alpha to calculate: 
+\begin{align*}
+\frac{d^2P}{d\lambda^2} &= \frac{mt(mt+1)}{(1+\lambda /m)^{mt}(m+\lambda )^2} \\ 
+C &= (1+\lambda /m)^{mt} \cdot \frac{mt(mt+1)}{(1+\lambda /m)^{mt}(m+\lambda )^2} \\
+&=  \frac{mt(mt+1)}{(m+\lambda )^2} \\
+lim_{m\rightarrow \infty }& \frac{m^2t^2 + mt}{m^2 + 2m\lambda + \lambda^2} && \text{take the limit}\\
+& \frac{t^2 + t/m}{1 + 2\lambda /m + \frac{\lambda^2}{m^2}} && \text{divide by $m^2$} \\
+lim_{m\rightarrow \infty }& (2\lambda /m), \ (\frac{\lambda^2}{m^2}), \ (t/m) \rightarrow 0 \\
+\implies & lim_{m\rightarrow \infty } C = t^2
+\end{align*}
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{problem}{5} Consider a 5\% callable bond with 20 years maturity and 8\% yield which pays the face value plus 10\% if it is redeemed before maturity If after 10 years the bond is redeemed, find an upper bound for the yield at that time. Assume that coupon payments are made once per years. 
+
+\underline{Def: Callable Bonds} A bond is callable if the issuer has the right to repurchase the bond at a specified price. Usually this call price falls with time, and often there is an initial call protection period where the bond can not be called.
+
+\textbf{Solution} I'm not going to keep writing out these formulas since I am running short on time! But I use the bond price formula (pg 53, exampled above) using a face value of \$1,000 a coupon payment of \$50 the $\lambda = 0.08$, annula payments m=1, for n=20 years. I wrote a function in R to do this (though one probably already existed) and the Price = \$ 705.45. Since we are redeeming before maturity we receive the face value plus 10\% is \$1,100.  And then since theres only 10 years left we use n=10. Then we need to calculate the interest rate that could be used to make it so that the $$ P = 705.45 \approx \frac{1100}{[1+\lambda]^{10}} + \frac{50}{\lambda }\{ 1- \frac{1}{[1+\lambda ]^{10}}\}$$
+I'm not sure how I was supposed to do it, but basically I just tried a bunch of different values using my R formula and it has to be less that \%10.05. 
+
+\end{problem}
+\end{document}
+
+https://www.investopedia.com/university/advancedbond/bond-pricing.asp
+https://quant.stackexchange.com/questions/22288/duration-of-perpetual-bond
+http://people.stern.nyu.edu/gyang/foundations/sample-final-solutions.html
+http://pages.stern.nyu.edu/~jcarpen0/courses/b403333/07convexh.pdf
+https://web.stanford.edu/class/msande247s/2009/summer%2009%20week%205/Bond%20Formula%20Sheet.pdf

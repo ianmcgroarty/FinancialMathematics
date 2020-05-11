@@ -1,0 +1,242 @@
+\documentclass[12pt]{article}
+\usepackage[T1]{fontenc}
+%\usepackage[latin9]{inputenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{setspace}
+\usepackage{rotating}
+\usepackage{graphics}
+\usepackage[round]{natbib}
+%\usepackage{graphicx}
+%\usepackage{float} 				%allows you to float images
+\usepackage{latexsym}
+\usepackage{bbding}
+%\usepackage {moresize}
+\usepackage{listings}
+\usepackage{bbding}
+\usepackage{blindtext}
+\usepackage{hhline}
+\usepackage{tikz}
+\usetikzlibrary{trees}
+%\usetikzlibrary{shapes,backgrounds}
+%\usepackage{pgfplots}
+%\usetikzlibrary{arrows}
+\usepackage{enumitem}
+\doublespacing
+%\usepackage{geometry}
+\usepackage{amsthm}
+\usepackage{color}
+%\usepackage{array,multirow}
+%\usepackage{subcaption}
+%\usepackage{pst-plot}
+%	\psset{xunit=15mm}
+%\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=.5in,rmargin=.5in}
+\setlength{\parskip}{\bigskipamount}
+\setlength{\parindent}{0pt}
+\usepackage{multicol}
+
+\newenvironment{problem}[3][Problem]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+
+\title{Problem Set 2 \thanks{Problems (1),2,4,5,6}}
+\author{Ian McGroarty \\
+	Course Number: 625.641}
+\date{July 2, 2019}
+
+\begin{document}
+
+\maketitle
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{problem}1. Verizon and AT\& T\footnote{I pulled the data from: https://finance.yahoo.com/quote/T/history?period1
+=1451710800\&period2=1484456400\&interval=1wk\&filter=history\&frequency=1wk}. I was able to make a covariance matrix using excel:\footnote{I maintain using adjusted close prices to keep it simple even if this doesn't make the most sense} 
+\begin{center}
+\begin{tabular}{c|cc|cc}
+\hline
+Stock & Covariance & &Price 17Jan2017 &Price 23June17\\ 
+\hline
+T & 5.380 & 5.066 & 36.20 &33.82\\
+VZ & 5.067 & 5.758 & 58.13 & 41.4
+\end{tabular}
+\end{center}
+\textbf{Solution} We can make use of the two fund theorem (pg 163) here so it will only be necessary to find two solutions for this problem then use combinations of them to solve for all values of $\bar{r}$. I will use $\lambda = 0, \ \mu = 1$ Thus, equation (6.8a) becomes: $ \Sigma_{j=1}^2 \sigma_{ij} v_j = 1 $ .  To solve this equation I use R: 
+$$
+\begin{bmatrix}
+ 5.380 & 5.066 \\
+ 5.067 & 5.758
+\end{bmatrix}
+\cdot
+\begin{bmatrix} v_1 & v_2 \end{bmatrix}
+=
+\begin{bmatrix} 1 & 1 \end{bmatrix}
+\implies
+\begin{matrix} v_1 = 0.1303 \\ v_2 = 0.05902 \end{matrix}
+$$
+ Now of course we need to normalize this such that $w_1 + w_2 = 1$ We do this by solving $ w_1 = \frac{v_1}{\Sigma v_j}$ This gives us $$w_1 = 0.688 \text{ and } w_2 =0.312$$  This means that \%68.8 of our \$1,000,000 (\$688,000) was spent on ATT, and \%31.2 (\$312,000) on Verizon. Using the prices at January 17, 2017 You can calulate that you bought: $688,000/36.20 = 21366.46$ shares of ATT and $312,000/58.13 = 5367.28$ shares of Verizon.\footnote{can you buy part of a share?}. To find the market value of this portfolio multiply the number of shares time the price at June 23, 2017: $ 21366.46*33.82 =\$722,613.7$ plus $  5367.28*41.4 =\$222,205.4$ = \$944,819.1. Which has a rate of return of: $r = \frac{944,819.1-1,000,000}{1,000,000} = -0.055\% $ You couldn't have give us a winning stock? What happened to nonsatiation????
+ 
+ \end{problem}
+ 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{problem}2. Dice product. Find the expected value and variance of the product of two dice. \\
+textbf{Solution}Let $r_1$ and $r_2$ be the outcome of each roll. Using the definition of Independence found in (Larson and Marx 2018 pg 55) we can say that $P(r_1\cdot r_2) = P(r_1)\cdot P(r_2)$ So! $$E(z) = E(r_1\cdot r_2) = E(r_1)\cdot E(r_2) = 3.5 \cdot 3.5 = 12.25.$$ To find the variance we will use Theorem 3.6.1 (pg 155): $Var(W) = E(W^2)-\bar{W}^2$. So first we need to find $$E(z^2) = E((r_1r_2)^2)=E(r_1^2)\cdot E(r_2^2) = \frac{91}{6}\cdot \frac{91}{6} = 230.0378.$$ We can find $(E(z))^2= 150.0625$ Plugging this into the formula for variance: $$ 230.0378-150.0625 = 79.9753$$t
+
+\end{problem}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{problem}4. Two Stocks are available with $\bar{r_1}, \bar{r_2}, \sigma_1^2 , \sigma_2^2, \sigma_{12}$. Find weights and resulting rate of return.  \\
+\textbf{Solution} Let $\alpha $ and $(1-\alpha )$ be the weights of stocks 1 and 2. From the proof of the \underline{Portfolio diagram lemma} (pg 154) we know can say that:
+\begin{align*}
+\sigma^2(\alpha ) &= (1-\alpha)^2\sigma_1^2 - 2\rho \alpha (1-\alpha)\sigma_1\sigma_2 + \alpha^2\sigma_2^2 \\
+&= \sigma_1^2 - 2\alpha \sigma_1^2 + \alpha^2\sigma_1^2 - 2\rho \alpha \sigma_1\sigma_2 + 2\rho \alpha^2 \sigma_1\sigma_2+ \alpha^2\sigma_2^2  &&\text{Expand}\\
+&\text{ We want to find the minimum for }\alpha \\ 
+\frac{\partial \sigma^2(\alpha )}{\partial \alpha } &= -2\sigma_1^2 + 2\alpha \sigma_1^2 - 2\rho  \sigma_1\sigma_2 + 4\rho \alpha \sigma_1\sigma_2 + 2\alpha \sigma_2^2  \\
+&= 2\sigma_1^2(1-\alpha ) - 2\rho \sigma_1\sigma_2(1+2\alpha ) + 2\alpha \sigma_2^2  = 0 && \text{Set to 0} \\
+\alpha &= \frac{\sigma_1^2 - \rho \sigma_1 \sigma_2 }{\sigma_1^2 - 2\rho \sigma_1 \sigma_2 + \sigma_2^2} \\
+\end{align*}
+I won't write it out but $\alpha $ is one weight and $(1-\alpha)$ is the other. Now to find $\bar{r}$. We use the definiton of rate of return: 
+$\bar{r}(\alpha ) = (1-\alpha )\bar{r_1} + \alpha \bar{r_2}$
+\end{problem}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem} 5. Rain Insurance. Invest \$1Mil to get \%50 chance at \$3Mil. Insurance cost \$0.50 and pays \$1.00 if used. \\
+\textbf{Solution (a)} Expected rate of return on investment if he buys $u$ units of insurance. Let $p$ be the probability of rain (0.50). First this is an easy expected value problem. $E(Revenue) = 3Mil \cdot + up$ Amount invested $= 1Mil + 0.5u$. Rate of Return is defined (pg 138) as $r = \frac{X_1 - X_0}{X_0}$ Plugging in $X_1$ for expected revenue and $X_0$ for amount invested: $$ \frac{(1.5Mil + 0.5u) - (1Mil + 0.5u)}{(1Mil + 0.5u)} = \frac{.5Mil }{(1Mil + 0.5u)} $$
+\textbf{Solution (b)} If he purchases 3 million units of insurance he will be guaranteed to get \$3 million weather(ha) it rains or not. Furthermore, he is going to invest $1Mil + 0.5\cdot 3Mil = 2.5Mil$ Meaning he is guaranteed to make \$500,000 cash money. 
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}6.  Wild Cats! Suppose there are n uncorrelated assets. The mean rate of return is the same for each asset but the variances are different. \\ 
+\textbf{Solution (a)} Since all of the $\bar{r}$ values are the same it will just be a horizontal line like shown. \\
+\begin{center}
+\begin{tikzpicture}
+    \draw [thin, gray, ->] (0,0) -- (0,3) 
+    node [above, black] {$\bar{r}$};  
+    \draw [thin, gray, ->] (0,0) -- (8,0)   
+    node [right, black] {$\sigma $};              
+    \draw [draw=black, dotted,  dash pattern=on 4pt] (2,1.5) -- (7,1.5);  
+\end{tikzpicture}
+\end{center}Find the minimum variance point. 
+
+
+\textbf{Solution (b)} Okay so I couldn't get this one so i'll do my best to work through some logic. But first, when I think about this graphically using the $r-\sigma $ graph, wouldn't you just choose the lowest variance? I mean I understand the idea that adding more diversity reduces variance, but how would I depict that graphically? I suppose my graph in part a must be wrong too. On to my attempts. 
+
+Well right off the bat we can see that the expected return (equation 6.5b in the equations for efficient set (pg 153) will transform to $$ \bar{r} = \Sigma w_i\bar{r_i} = \bar{r_i}\Sigma w_i = \bar{r_i}$$ since $\Sigma w_i = 1$ by (6.5c) and all $r_i$ are equal. Similarly, we can make $\lambda r_i = \lambda$ from equation 6.5a since these are all equal. Then we can just combine $\lambda - \mu = \mu $ into one scalar. Thus, we are left with: 
+$$ \Sigma_{j=1}^n \sigma_{ij}w_j - \mu = 0 \implies \Sigma_{j=1}^n \sigma_{ij}w_j  = \mu $$
+We now use the definition of variance (pg 150): $\sigma^2 = \Sigma_{i,j=1}^n w_iw_j\sigma_{ij}$ Since the assets are uncorrelated we have $\sigma_{ij}=0$ Now this is where I get stuck since we can't find the weights using the markowitz solution (or at least I can't figure out how. I also tried starting from a different point:
+
+The variance can be defined as $\sigma^2 = \Sigma_{i=1}^n\alpha_i^2\sigma_i^2 + 2 \Sigma \alpha_i\alpha_j\sigma({ij}$ Since the assets are uncorrelated, $2 \Sigma \alpha_i\alpha_j\sigma({ij} = 0 $ So we are left with $$\sigma^2 = \Sigma_{i=1}^n\alpha_i^2\sigma_i^2 $$. Now we saw that if we allow for the equal proportions of the assets then we see that: $$\sigma^2 = \Sigma_{i=1}^n \frac{1}{n^2}\sigma^2 = \frac{\sigma^2}{n}$$ In this case however, we are not assuming equal proportions of assets. So we need the wights (back to square 1). We want to select weights such that the variance is minimized. But the only constraint we have for sure is $\Sigma w_i =1$. 
+\end{problem}
+
+
+\end{document}
+
+
+
+% Set the overall layout of the tree
+
+
+
+
+\tikzstyle{level 1}=[level distance=3.5cm, sibling distance=3.5cm]
+\tikzstyle{level 2}=[level distance=3.5cm, sibling distance=2cm]
+
+% Define styles for bags and leafs
+\tikzstyle{bag} = [text width=4em, text centered]
+\tikzstyle{end} = [circle, minimum width=3pt,fill, inner sep=0pt]
+
+\begin{tikzpicture}[grow=right, sloped]
+\node[bag] {Bag 1 $4W, 3B$}
+    child {
+        node[bag] {Bag 2 $4W, 5B$}        
+            child {
+                node[end, label=right:
+                    {$P(W_1\cap W_2)=\frac{4}{7}\cdot\frac{4}{9}$}] {}
+                edge from parent
+                node[above] {$W$}
+                node[below]  {$\frac{4}{9}$}
+            }
+            child {
+                node[end, label=right:
+                    {$P(W_1\cap B_2)=\frac{4}{7}\cdot\frac{5}{9}$}] {}
+                edge from parent
+                node[above] {$B$}
+                node[below]  {$\frac{5}{9}$}
+            }
+            edge from parent 
+            node[above] {$W$}
+            node[below]  {$\frac{4}{7}$}
+    }
+    child {
+        node[bag] {Bag 2 $3W, 6B$}        
+        child {
+                node[end, label=right:
+                    {$P(B_1\cap W_2)=\frac{3}{7}\cdot\frac{3}{9}$}] {}
+                edge from parent
+                node[above] {$B$}
+                node[below]  {$\frac{3}{9}$}
+            }
+            child {
+                node[end, label=right:
+                    {$P(B_1\cap B_2)=\frac{3}{7}\cdot\frac{6}{9}$}] {}
+                edge from parent
+                node[above] {$W$}
+                node[below]  {$\frac{6}{9}$}
+            }
+        edge from parent         
+            node[above] {$B$}
+            node[below]  {$\frac{3}{7}$}
+    };
+\end{tikzpicture}
+
+
+\section{Definitions}
+\underline{Def: Forward Rate Formulas} (pg 79). The implied forward rate between times $t_1$ and $t_2$ is the rate of interset between those times that is consistent with a given spot rate curve. For Yearly compounding, the forward rate is:  
+\begin{align*}
+f_{i,j} =& [\frac{(1+s_j)^j}{(1+s_i)^i}]^{1/(j-i)}-1 \\
+ e^{s(t_2)t_2} =& e^{s(t_1)t_1}e^{f_{t_1,t_2}(t_2-t_1)}
+\end{align*}
+
+\underline{Discount Factor Relation} The discount facot between periods i and j is defined as $$ d_{i,j}=[\frac{1}{1+f_{i,j}}]^{j-i}$$ These factors satisfy the compounding rule: $d_{i,k}=d_{i,j}d_{j,k}$\\
+
+\underline{Def. Derivative (Ross pg 223)} Let F be a real valued function defined on an open interval contained a point a. We say f is differentiable at a, or f has derivative at a if the limit $$ f'(a) = \lim_{x \to a} \frac{f(x)-f(a)}{x-a} $$
+
+
+
+
+https://www.investopedia.com/university/advancedbond/bond-pricing.asp
+https://quant.stackexchange.com/questions/22288/duration-of-perpetual-bond
+http://people.stern.nyu.edu/gyang/foundations/sample-final-solutions.html
+http://pages.stern.nyu.edu/~jcarpen0/courses/b403333/07convexh.pdf
+https://web.stanford.edu/class/msande247s/2009/summer%2009%20week%205/Bond%20Formula%20Sheet.pdf
+
+
+\underline{Def: Forward Rate Formulas} (pg 79). The implied forward rate between times $t_1$ and $t_2$ is the rate of interset between those times that is consistent with a given spot rate curve. For Yearly compounding, the forward rate is:  
+\begin{align*}
+f_{i,j} =& [\frac{(1+s_j)^j}{(1+s_i)^i}]^{1/(j-i)}-1 \\
+ e^{s(t_2)t_2} =& e^{s(t_1)t_1}e^{f_{t_1,t_2}(t_2-t_1)}
+\end{align*}
+
+\underline{Discount Factor Relation} The discount facot between periods i and j is defined as $$ d_{i,j}=[\frac{1}{1+f_{i,j}}]^{j-i}$$ These factors satisfy the compounding rule: $d_{i,k}=d_{i,j}d_{j,k}$\\
+
+\underline{Def. Derivative (Ross pg 223)} Let F be a real valued function defined on an open interval contained a point a. We say f is differentiable at a, or f has derivative at a if the limit $$ f'(a) = \lim_{x \to a} \frac{f(x)-f(a)}{x-a} $$
+
+
+
+\begin{align*}
+\text{Maximize  } & 4x_1 +5x_2 +3x_3 +4.3x_4 + x_5 + 1.5x_6 + 2.5x_7 + 0.3x_8 + x_9 + 2x_{10} \\
+\text{Subject to } & 2x_1 + 3x_2 + 1.5x_3 + 2.2x_4 +0.5x_5 +15x_6 + 2.5x_7 +0.1x_8 + 0.6x_9 + x_{10} \leq 5 \\ 
+& x_1 + x_2 + x_3 + x_4 \leq 1 \\
+& x_5 + x_6 + x_7 \leq 1 \\
+& x_8 + x_9 + x_{10} \leq 1 \\
+\end{align*}

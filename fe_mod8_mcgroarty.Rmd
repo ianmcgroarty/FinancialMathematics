@@ -1,0 +1,51 @@
+---
+title: "Problem Set 8"
+author: "Ian McGroarty"
+date: "13July2020"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+Sys.setenv(HTTP_PROXY = "c1proxy.frb.org:8080")
+Sys.setenv(HTTPS_PROXY = "c1proxy.frb.org:8080")
+Sys.setenv(SPARK_HOME = "/usr/hdp/current/spark2-client")
+Sys.setenv(SPARK_CONF_DIR = "/usr/hdp/current/spark2-client/conf/")
+
+library(knitr)
+library(rmarkdown)
+library(expm)
+library(rmutil) 
+library(mnormt)
+library(graphics)
+library(raster)
+library(sp)
+library(MASS)
+library(dplyr)
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "/home/c1imm01/FinancialMath")
+```
+
+```{css, echo=FALSE}
+.watch-out {
+  background-color: lightpink;
+  border: 3px solid red;
+  font-weight: bold;
+}
+.problem {
+  background-color: #CCCCCC;
+  border: 3px solid #CCCCCC;
+}
+```
+
+
+# Problem 1
+<div class ="problem">
+Starting with the “Module 8 MB7.3 Spreadsheet”, from Chapter 7 in Allman, describe the
+liability side structure where you assume the post-default trigger month is zero.
+When does the senior tranche pay-off? Does the junior tranche get fully paid?
+</div>
+
+The structural inputs for this model include asse-Based Fees of 2%, a 1% reserve account, a default trigger of 5%, an active swap based off the 1-month Libor. The last payment for the senior tranch is made in month 225. The junior tranche does managed to get fully paid by month 360. 
+
+
